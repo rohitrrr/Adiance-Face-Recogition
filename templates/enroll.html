@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Enroll Face - Adiance Face Recognition{% endblock %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="page-title text-center mb-4">Face Enrollment</h1>
+            <p class="text-center text-light opacity-75 mb-5">Register new faces into the database for future identification</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="futuristic-card">
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" id="enrollForm">
+                        <div class="mb-4">
+                            <label for="subject_id" class="form-label">Subject ID <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-lg" id="subject_id" name="subject_id" required placeholder="Enter a unique identifier">
+                            <div class="form-text">This identifier will be used to recognize this person later.</div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="file" class="form-label">Face Image <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control form-control-lg" id="file" name="file" accept=".jpg,.jpeg,.png,.bmp,.ppm" required>
+                            <div class="form-text">Supported formats: JPG, JPEG, PNG, BMP, PPM</div>
+                        </div>
+                        <div class="mb-4">
+                            <img id="imagePreview" src="#" alt="Preview" style="max-width: 100%; display: none;">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                <i class="bi bi-person-plus me-2"></i> Enroll Face
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <h3 class="text-center mb-4 neon-text">Enrollment Process</h3>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="futuristic-card card-3d h-100 hover-glow" data-animation="slide-in-up" data-delay="0.1">
+                    <div class="card-body text-center">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3 float-animation" style="width: 60px; height: 60px;">
+                            <i class="bi bi-image text-primary fs-4"></i>
+                        </div>
+                        <h5 class="neon-text">Image Upload</h5>
+                        <p class="text-light opacity-75 small">Upload a high-quality face image</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="futuristic-card card-3d h-100 hover-glow" data-animation="slide-in-up" data-delay="0.2">
+                    <div class="card-body text-center">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3 float-animation" style="width: 60px; height: 60px;">
+                            <i class="bi bi-crop text-primary fs-4"></i>
+                        </div>
+                        <h5 class="neon-text">Face Detection</h5>
+                        <p class="text-light opacity-75 small">System locates and aligns the face</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="futuristic-card card-3d h-100 hover-glow" data-animation="slide-in-up" data-delay="0.3">
+                    <div class="card-body text-center">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3 float-animation" style="width: 60px; height: 60px;">
+                            <i class="bi bi-fingerprint text-primary fs-4"></i>
+                        </div>
+                        <h5 class="neon-text">Template Creation</h5>
+                        <p class="text-light opacity-75 small">Extract unique facial features</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="futuristic-card card-3d h-100 hover-glow" data-animation="slide-in-up" data-delay="0.4">
+                    <div class="card-body text-center">
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3 float-animation" style="width: 60px; height: 60px;">
+                            <i class="bi bi-database-add text-primary fs-4"></i>
+                        </div>
+                        <h5 class="neon-text">Storage</h5>
+                        <p class="text-light opacity-75 small">Save template in the database</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get form elements
+    const form = document.getElementById('enrollForm');
+    const fileInput = document.getElementById('file');
+    const preview = document.getElementById('imagePreview');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Handle file input change
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Disable submit button and show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+
+        // Submit the form
+        this.submit();
+    });
+});
+</script>
+{% endblock %}
