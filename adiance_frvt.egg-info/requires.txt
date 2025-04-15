@@ -1,0 +1,6 @@
+numpy>=1.19.0
+opencv-python>=4.5.0
+onnxruntime>=1.8.0
+flask>=2.0.0
+flask-limiter>=2.0.0
+werkzeug>=2.0.0

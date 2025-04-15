@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}Batch Enrollment - Adiance Face Recognition{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="animate-on-scroll">Batch Enrollment</h1>
+                <p class="lead text-light opacity-75 animate-on-scroll fade-in-1">
+                    Process multiple face images at once for efficient enrollment
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="pb-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="futuristic-card border-glow">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="section-title">Upload Multiple Images</h2>
+                        <p class="text-light opacity-75 mb-4">Select or drag multiple image files to enroll them all at once.</p>
+                        
+                        <form method="POST" enctype="multipart/form-data" id="batchForm" class="mt-4">
+                            <div class="mb-4">
+                                <label for="id_prefix" class="form-label">ID Prefix (Optional)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="bi bi-hash"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0" id="id_prefix" name="id_prefix" placeholder="e.g., employee_">
+                                    <span class="input-group-text bg-transparent"><code>[1,2,3...]</code></span>
+                                </div>
+                                <div class="form-text text-light opacity-50">Subject IDs will be generated as prefix1, prefix2, etc. If left blank, unique IDs will be auto-generated.</div>
+                            </div>
+                            
+                            <div class="mb-4 file-upload-container">
+                                <label class="form-label">Face Images <span class="text-danger">*</span></label>
+                                <input type="file" class="form-control d-none" id="files" name="files[]" multiple accept=".jpg,.jpeg,.png,.bmp" required>
+                                <div class="drop-zone" id="dropZone" style="height: 240px;">
+                                    <i class="bi bi-images icon"></i>
+                                    <h4>Drag & Drop Files Here</h4>
+                                    <p class="text-light opacity-50 mb-3">or</p>
+                                    <button type="button" class="btn btn-outline" onclick="document.getElementById('files').click()">
+                                        Browse Files
+                                    </button>
+                                    <p class="text-light opacity-50 mt-3 small">Supported formats: JPG, JPEG, PNG, BMP</p>
+                                </div>
+                            </div>
+                            
+                            <div id="fileList" class="mb-4" style="display: none;">
+                                <div class="futuristic-card">
+                                    <div class="card-header bg-transparent d-flex justify-content-between align-items-center p-3">
+                                        <h5 class="mb-0">Selected Files</h5>
+                                        <span class="badge bg-primary px-3 py-2" id="fileCount">0</span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <ul class="list-group list-group-flush" id="selectedFiles"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100" id="submitBtn" disabled>
+                                <i class="bi bi-people me-2"></i> Enroll All Faces
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Process Visualization -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4 animate-on-scroll">Batch Processing Benefits</h2>
+        
+        <div class="row g-4 mt-3">
+            <div class="col-lg-4">
+                <div class="futuristic-card h-100 animate-on-scroll">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-lightning"></i>
+                        </div>
+                        <h3>Efficient</h3>
+                        <p class="text-light opacity-75">Process hundreds of images in one operation, saving time and effort.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="futuristic-card h-100 animate-on-scroll fade-in-1">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-grid-3x3"></i>
+                        </div>
+                        <h3>Organized</h3>
+                        <p class="text-light opacity-75">Automatically name and organize face templates with customizable prefixes.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="futuristic-card h-100 animate-on-scroll fade-in-2">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-clipboard-data"></i>
+                        </div>
+                        <h3>Detailed</h3>
+                        <p class="text-light opacity-75">Get comprehensive reports with success/failure status for each image.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Advanced Tips -->
+<section class="py-5">
+    <div class="container">
+        <div class="futuristic-card border-glow animate-on-scroll">
+            <div class="card-body p-4 p-md-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-4 text-center mb-4 mb-lg-0">
+                        <i class="bi bi-lightbulb display-1 text-accent"></i>
+                    </div>
+                    <div class="col-lg-8">
+                        <h3>Tips for Successful Batch Enrollment</h3>
+                        <ul class="mt-4 ps-0">
+                            <li class="d-flex mb-3">
+                                <div class="me-3 text-primary">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                                <div>
+                                    <h5>Use Clear Images</h5>
+                                    <p class="text-light opacity-75 mb-0">Ensure all images are clear, well-lit, and show the face directly.</p>
+                                </div>
+                            </li>
+                            <li class="d-flex mb-3">
+                                <div class="me-3 text-primary">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                                <div>
+                                    <h5>Consistent Naming</h5>
+                                    <p class="text-light opacity-75 mb-0">Use descriptive prefixes that make it easy to identify groups of enrolled faces.</p>
+                                </div>
+                            </li>
+                            <li class="d-flex">
+                                <div class="me-3 text-primary">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                                <div>
+                                    <h5>Verify Results</h5>
+                                    <p class="text-light opacity-75 mb-0">Check the enrollment report to ensure all images were processed successfully.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('files');
+    const dropZone = document.getElementById('dropZone');
+    const fileList = document.getElementById('fileList');
+    const selectedFiles = document.getElementById('selectedFiles');
+    const fileCount = document.getElementById('fileCount');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Handle file selection
+    fileInput.addEventListener('change', handleFiles);
+    
+    // Drag and drop handling
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, function(e) {
+            e.preventDefault();
+            this.classList.add('active');
+        });
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, function(e) {
+            e.preventDefault();
+            this.classList.remove('active');
+            
+            if (eventName === 'drop') {
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFiles();
+                }
+            }
+        });
+    });
+    
+    function handleFiles() {
+        if (fileInput.files.length > 0) {
+            fileList.style.display = 'block';
+            selectedFiles.innerHTML = '';
+            fileCount.textContent = fileInput.files.length;
+            
+            for (let i = 0; i < fileInput.files.length; i++) {
+                const file = fileInput.files[i];
+                
+                // Create list item
+                const li = document.createElement('li');
+                li.className = 'list-group-item bg-transparent d-flex justify-content-between align-items-center';
+                
+                // File info
+                const fileInfo = document.createElement('div');
+                fileInfo.className = 'd-flex align-items-center';
+                
+                // Preview thumbnail
+                const preview = document.createElement('div');
+                preview.className = 'me-3';
+                preview.style.width = '40px';
+                preview.style.height = '40px';
+                preview.style.borderRadius = '4px';
+                preview.style.backgroundSize = 'cover';
+                preview.style.backgroundPosition = 'center';
+                
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.style.backgroundImage = `url(${e.target.result})`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.backgroundColor = 'rgba(var(--light), 0.1)';
+                    preview.innerHTML = '<i class="bi bi-file-earmark"></i>';
+                    preview.style.display = 'flex';
+                    preview.style.alignItems = 'center';
+                    preview.style.justifyContent = 'center';
+                }
+                
+                const nameAndSize = document.createElement('div');
+                nameAndSize.innerHTML = `
+                    <div class="text-truncate" style="max-width: 300px;">${file.name}</div>
+                    <small class="text-light opacity-50">${formatFileSize(file.size)}</small>
+                `;
+                
+                fileInfo.appendChild(preview);
+                fileInfo.appendChild(nameAndSize);
+                
+                // Status indicator
+                const status = document.createElement('span');
+                status.className = 'badge bg-secondary';
+                status.innerHTML = 'Pending';
+                
+                li.appendChild(fileInfo);
+                li.appendChild(status);
+                selectedFiles.appendChild(li);
+                
+                // Add fade-in animation
+                setTimeout(() => {
+                    li.classList.add('fade-in');
+                }, i * 50);
+            }
+            
+            // Enable submit button
+            submitBtn.disabled = false;
+            dropZone.style.display = 'none';
+        } else {
+            fileList.style.display = 'none';
+            submitBtn.disabled = true;
+            dropZone.style.display = 'flex';
+        }
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes < 1024) return bytes + ' bytes';
+        else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        else return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+    
+    // Form submission handling
+    const batchForm = document.getElementById('batchForm');
+    batchForm.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        
+        // Update status indicators
+        const statuses = selectedFiles.querySelectorAll('.badge');
+        statuses.forEach(badge => {
+            badge.className = 'badge bg-warning text-dark';
+            badge.innerHTML = 'Processing';
+        });
+    });
+});
+</script>
+{% endblock %}

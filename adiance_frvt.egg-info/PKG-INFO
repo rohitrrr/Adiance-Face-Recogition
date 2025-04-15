@@ -1,0 +1,112 @@
+Metadata-Version: 2.4
+Name: adiance-frvt
+Version: 1.0.0
+Summary: A face recognition system using RetinaFace and AdaFace
+Author: Your Name
+Author-email: your.email@example.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=1.19.0
+Requires-Dist: opencv-python>=4.5.0
+Requires-Dist: onnxruntime>=1.8.0
+Requires-Dist: flask>=2.0.0
+Requires-Dist: flask-limiter>=2.0.0
+Requires-Dist: werkzeug>=2.0.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Adiance Face Recognition System
+
+A face recognition system using RetinaFace for face detection and AdaFace for face recognition.
+
+## Features
+
+- Face detection using RetinaFace
+- Face recognition using AdaFace
+- Web interface for enrollment and identification
+- REST API for programmatic access
+- Rate limiting and security features
+
+## Requirements
+
+- Python 3.7 or higher
+- OpenCV
+- ONNX Runtime
+- Flask
+- NumPy
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd flask_app
+```
+
+2. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -e .
+```
+
+## Configuration
+
+The system uses two main models:
+1. RetinaFace (`retinaface_mnet_v2.onnx`) for face detection
+2. AdaFace (`Embedding.onnx`) for face recognition
+
+Make sure these model files are in the root directory of the project.
+
+## Running the Application
+
+1. Start the Flask server:
+```bash
+python app.py
+```
+
+2. Open your browser and navigate to:
+```
+http://localhost:5000
+```
+
+## API Endpoints
+
+### Enrollment
+- POST `/api/enroll`
+  - Request: Form data with `file` (image) and `subject_id`
+  - Response: JSON with enrollment status
+
+### Identification
+- POST `/api/search`
+  - Request: Form data with `file` (image)
+  - Response: JSON with matching candidates and scores
+
+## Directory Structure
+
+```
+flask_app/
+â”œâ”€â”€ app.py              # Main Flask application
+â”œâ”€â”€ adiance_wrapper.py  # Python wrapper for face recognition
+â”œâ”€â”€ config/             # Configuration files
+â”œâ”€â”€ static/             # Static files (CSS, JS, uploads)
+â”œâ”€â”€ templates/          # HTML templates
+â””â”€â”€ enrollment_db/      # Enrollment database
+```
+
+## License
+
+MIT License 

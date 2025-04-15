@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Batch Results - Adiance Face Recognition{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="animate-on-scroll">Batch Results</h1>
+                <p class="lead text-light opacity-75 animate-on-scroll fade-in-1">
+                    Processing summary for your batch {{ operation }} operation
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Results Content -->
+<section class="pb-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                {% set success_count = results|selectattr('status', 'equalto', 'success')|list|length %}
+                {% set error_count = results|length - success_count %}
+                
+                <!-- Summary Card -->
+                <div class="futuristic-card border-glow mb-4">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-7">
+                                <h2 class="section-title">Processing Summary</h2>
+                                <div class="d-flex align-items-center mt-4">
+                                    <div class="me-4 text-center">
+                                        <div class="circle-stat" style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(rgba(var(--success), 0.8) {{ success_count / results|length * 360 }}deg, rgba(var(--danger), 0.8) 0deg); display: flex; align-items: center; justify-content: center;">
+                                            <div style="width: 80px; height: 80px; border-radius: 50%; background-color: rgba(var(--dark), 0.8); display: flex; align-items: center; justify-content: center;">
+                                                <span class="text-gradient fw-bold">{{ results|length }}</span>
+                                            </div>
+                                        </div>
+                                        <p class="mt-2 mb-0 small">Total Files</p>
+                                    </div>
+                                    <div>
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="me-2" style="width: 12px; height: 12px; background-color: rgba(var(--success), 0.8); border-radius: 2px;"></div>
+                                            <div class="d-flex justify-content-between w-100">
+                                                <span>Successful:</span>
+                                                <span class="fw-bold">{{ success_count }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2" style="width: 12px; height: 12px; background-color: rgba(var(--danger), 0.8); border-radius: 2px;"></div>
+                                            <div class="d-flex justify-content-between w-100">
+                                                <span>Failed:</span>
+                                                <span class="fw-bold">{{ error_count }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 mt-4 mt-md-0">
+                                <div class="text-center text-md-end">
+                                    {% if error_count == 0 %}
+                                        <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                                        <h4 class="mt-2">All Files Processed Successfully</h4>
+                                    {% elif success_count == 0 %}
+                                        <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 3rem;"></i>
+                                        <h4 class="mt-2">All Files Failed Processing</h4>
+                                    {% else %}
+                                        <i class="bi bi-info-circle-fill text-warning" style="font-size: 3rem;"></i>
+                                        <h4 class="mt-2">Partial Success</h4>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detailed Results -->
+                <div class="futuristic-card border-glow">
+                    <div class="card-header bg-transparent p-3">
+                        <ul class="nav nav-tabs card-header-tabs" id="resultsTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+                                    All Results <span class="badge bg-primary ms-2">{{ results|length }}</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="success-tab" data-bs-toggle="tab" data-bs-target="#success" type="button" role="tab">
+                                    Successful <span class="badge bg-success ms-2">{{ success_count }}</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="failed-tab" data-bs-toggle="tab" data-bs-target="#failed" type="button" role="tab">
+                                    Failed <span class="badge bg-danger ms-2">{{ error_count }}</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="tab-content">
+                            <!-- All Results Tab -->
+                            <div class="tab-pane fade show active" id="all" role="tabpanel">
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>File Name</th>
+                                                <th>Subject ID</th>
+                                                <th>Status</th>
+                                                <th>Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for result in results %}
+                                                <tr class="animate-on-scroll" style="animation-delay: {{ loop.index0 * 50 }}ms;">
+                                                    <td>{{ loop.index }}</td>
+                                                    <td class="text-truncate" style="max-width: 200px;">{{ result.filename }}</td>
+                                                    <td>{{ result.subject_id }}</td>
+                                                    <td>
+                                                        {% if result.status == 'success' %}
+                                                            <span class="badge bg-success">Success</span>
+                                                        {% else %}
+                                                            <span class="badge bg-danger">Failed</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if result.status == 'error' and result.message %}
+                                                            <span class="text-danger">{{ result.message }}</span>
+                                                        {% else %}
+                                                            <span class="text-light opacity-50">-</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Success Tab -->
+                            <div class="tab-pane fade" id="success" role="tabpanel">
+                                {% if success_count > 0 %}
+                                    <div class="table-responsive">
+                                        <table class="table mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>File Name</th>
+                                                    <th>Subject ID</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for result in results if result.status == 'success' %}
+                                                    <tr class="animate-on-scroll" style="animation-delay: {{ loop.index0 * 50 }}ms;">
+                                                        <td>{{ loop.index }}</td>
+                                                        <td class="text-truncate" style="max-width: 300px;">{{ result.filename }}</td>
+                                                        <td>{{ result.subject_id }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-emoji-frown display-1 text-light opacity-50"></i>
+                                        <h4 class="mt-3">No Successful Results</h4>
+                                        <p class="text-light opacity-75">All files failed to process.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Failed Tab -->
+                            <div class="tab-pane fade" id="failed" role="tabpanel">
+                                {% if error_count > 0 %}
+                                    <div class="table-responsive">
+                                        <table class="table mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>File Name</th>
+                                                    <th>Subject ID</th>
+                                                    <th>Error Message</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for result in results if result.status == 'error' %}
+                                                    <tr class="animate-on-scroll" style="animation-delay: {{ loop.index0 * 50 }}ms;">
+                                                        <td>{{ loop.index }}</td>
+                                                        <td class="text-truncate" style="max-width: 200px;">{{ result.filename }}</td>
+                                                        <td>{{ result.subject_id }}</td>
+                                                        <td class="text-danger">{{ result.message }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-emoji-smile display-1 text-light opacity-50"></i>
+                                        <h4 class="mt-3">No Failed Results</h4>
+                                        <p class="text-light opacity-75">All files were processed successfully.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex flex-wrap gap-3 justify-content-center mt-4">
+                    {% if operation == 'enrollment' %}
+                        <a href="{{ url_for('batch_enroll') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-2"></i> Enroll More Faces
+                        </a>
+                    {% endif %}
+                    <a href="{{ url_for('search') }}" class="btn btn-outline">
+                        <i class="bi bi-search me-2"></i> Search Faces
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Success Animation -->
+{% if success_count > 0 and error_count == 0 %}
+<div id="confettiCanvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Launch confetti for complete success
+    {% if success_count > 0 and error_count == 0 %}
+    setTimeout(() => {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }, 500);
+    {% endif %}
+});
+</script>
+{% endblock %}

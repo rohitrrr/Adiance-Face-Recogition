@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Adiance Face Recognition{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="container">
+        <div class="row hero-content">
+            <div class="col-12 text-center">
+                <h1 class="display-4 fw-bold">System Dashboard</h1>
+                <p class="lead">Monitor performance and usage statistics</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container py-5">
+    <div class="row mb-5">
+        <div class="col-md-3">
+            <div class="card bg-primary bg-gradient text-white">
+                <div class="card-body text-center">
+                    <h3 class="display-4 fw-bold">{{ stats['enrollments'] }}</h3>
+                    <p class="mb-0">Total Enrollments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success bg-gradient text-white">
+                <div class="card-body text-center">
+                    <h3 class="display-4 fw-bold">{{ stats['searches'] }}</h3>
+                    <p class="mb-0">Total Searches</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info bg-gradient text-white">
+                <div class="card-body text-center">
+                    <h3 class="display-4 fw-bold">{{ enrollment_count }}</h3>
+                    <p class="mb-0">Enrolled Subjects</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning bg-gradient text-white">
+                <div class="card-body text-center">
+                    <h3 class="display-4 fw-bold">{{ (stats['searches'] / stats['enrollments'] * 100)|round(1) if stats['enrollments'] > 0 else 0 }}%</h3>
+                    <p class="mb-0">Search Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">System Information</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            System Uptime
+                            <span class="badge bg-primary rounded-pill">{{ (stats['startup_time']|format_date) }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Last Enrollment
+                            <span class="badge bg-success rounded-pill">{{ (stats['last_enrollment']|format_date) }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Last Search
+                            <span class="badge bg-info rounded-pill">{{ (stats['last_search']|format_date) }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a href="{{ url_for('enroll') }}" class="btn btn-primary">
+                            <i class="bi bi-person-plus me-2"></i> Enroll New Face
+                        </a>
+                        <a href="{{ url_for('search') }}" class="btn btn-success">
+                            <i class="bi bi-search me-2"></i> Search Face
+                        </a>
+                        <a href="{{ url_for('batch_enroll') }}" class="btn btn-info text-white">
+                            <i class="bi bi-people me-2"></i> Batch Enrollment
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-light-subtle py-5">
+    <div class="container">
+        <h2 class="mb-4">System Health</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">Face Recognition System</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Face Detection Model</span>
+                                <span class="badge bg-success">Operational</span>
+                            </div>
+                            <div class="progress" style="height: 8px">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Face Embedding Model</span>
+                                <span class="badge bg-success">Operational</span>
+                            </div>
+                            <div class="progress" style="height: 8px">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Enrollment Database</span>
+                                <span class="badge bg-success">Connected</span>
+                            </div>
+                            <div class="progress" style="height: 8px">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">Server Resources</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Memory Usage</span>
+                                <span>42%</span>
+                            </div>
+                            <div class="progress" style="height: 8px">
+                                <div class="progress-bar" role="progressbar" style="width: 42%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>CPU Usage</span>
+                                <span>28%</span>
+                            </div>
+                            <div class="progress" style="height: 8px">
+                                <div class="progress-bar" role="progressbar" style="width: 28%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Disk Space</span>
+                                <span>67%</span>
+                            </div>
+                            <div class="progress" style="height: 8px">
+                                <div class="progress-bar" role="progressbar" style="width: 67%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
