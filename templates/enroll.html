@@ -3,56 +3,86 @@
 {% block title %}Enroll Face - Adiance Face Recognition{% endblock %}
 
 {% block content %}
-<section class="container py-5">
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <h1 class="page-title text-center mb-4">Face Enrollment</h1>
-            <p class="text-center text-muted mb-5">Register new faces into the database for future identification</p>
+<!-- Page Header -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="animate-on-scroll">Face Enrollment</h1>
+                <p class="lead text-light opacity-75 animate-on-scroll fade-in-1">
+                    Register new faces into the database for future identification
+                </p>
+            </div>
         </div>
     </div>
+</section>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow-sm">
-                <div class="card-body p-0">
-                    <div class="row g-0">
-                        <!-- Upload Form -->
-                        <div class="col-md-6 p-4 p-lg-5">
-                            <h2 class="section-title">Upload Face Image</h2>
-                            <form method="POST" enctype="multipart/form-data">
-                                <div class="mb-4">
-                                    <label for="subject_id" class="form-label">Subject ID <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control form-control-lg" id="subject_id" name="subject_id" required placeholder="Enter a unique identifier">
-                                    <div class="form-text">This identifier will be used to recognize this person later.</div>
-                                </div>
-                                <div class="mb-4">
-                                    <label for="file" class="form-label">Face Image <span class="text-danger">*</span></label>
-                                    <input type="file" class="form-control form-control-lg" id="file" name="file" accept=".jpg,.jpeg,.png,.bmp,.ppm" required onchange="previewImage(this)">
-                                    <div class="form-text">Supported formats: JPG, JPEG, PNG, BMP, PPM</div>
-                                </div>
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary btn-lg">
+<!-- Main Content -->
+<section class="pb-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="futuristic-card border-glow">
+                    <div class="card-body p-0">
+                        <div class="row g-0">
+                            <!-- Upload Form -->
+                            <div class="col-md-6 p-4 p-md-5 animate-on-scroll">
+                                <h2 class="section-title">Upload Face Image</h2>
+                                <form method="POST" enctype="multipart/form-data" class="mt-4">
+                                    <div class="mb-4">
+                                        <label for="subject_id" class="form-label">Subject ID <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-transparent border-end-0">
+                                                <i class="bi bi-person-badge"></i>
+                                            </span>
+                                            <input type="text" class="form-control border-start-0" id="subject_id" name="subject_id" required placeholder="Enter a unique identifier">
+                                        </div>
+                                        <div class="form-text text-light opacity-50">This identifier will be used to recognize this person later.</div>
+                                    </div>
+                                    
+                                    <div class="mb-4 file-upload-container">
+                                        <label class="form-label">Face Image <span class="text-danger">*</span></label>
+                                        <input type="file" class="form-control d-none" id="file" name="file" accept=".jpg,.jpeg,.png,.bmp,.ppm" required>
+                                        <div class="drop-zone" id="dropZone">
+                                            <i class="bi bi-camera icon"></i>
+                                            <h5>Drop Image Here</h5>
+                                            <p class="text-light opacity-50 small mb-3">or</p>
+                                            <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('file').click()">
+                                                Select File
+                                            </button>
+                                            <p class="text-light opacity-50 mt-3 small file-name"></p>
+                                        </div>
+                                        <div class="form-text text-light opacity-50">Supported formats: JPG, JPEG, PNG, BMP, PPM</div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary w-100 mt-4">
                                         <i class="bi bi-person-plus me-2"></i> Enroll Face
                                     </button>
-                                </div>
-                            </form>
-                        </div>
-                        
-                        <!-- Image Preview -->
-                        <div class="col-md-6 bg-light p-4 p-lg-5">
-                            <h2 class="section-title text-center">Image Preview</h2>
-                            <div class="preview-container mt-4">
-                                <img id="imagePreview" src="#" alt="Preview">
+                                </form>
                             </div>
-                            <div class="mt-4">
-                                <div class="alert alert-info" role="alert">
-                                    <h5 class="alert-heading"><i class="bi bi-info-circle me-2"></i> For best results:</h5>
-                                    <ul class="mb-0 ps-3">
-                                        <li>Ensure face is clearly visible</li>
-                                        <li>Use good lighting</li>
-                                        <li>Avoid extreme angles</li>
-                                        <li>Remove sunglasses</li>
-                                    </ul>
+                            
+                            <!-- Image Preview -->
+                            <div class="col-md-6 p-4 p-md-5 animate-on-scroll fade-in-1" style="background: rgba(var(--light), 0.02);">
+                                <h2 class="section-title text-center">Image Preview</h2>
+                                <div class="preview-container mt-4">
+                                    <img id="imagePreview" src="#" alt="Preview">
+                                    <div class="preview-overlay">
+                                        <i class="bi bi-eye fs-1 text-light"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <div class="futuristic-card">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><i class="bi bi-info-circle me-2 text-primary"></i> For best results:</h5>
+                                            <ul class="mb-0 ps-4 text-light opacity-90">
+                                                <li>Ensure face is clearly visible and centered</li>
+                                                <li>Use good lighting conditions</li>
+                                                <li>Avoid extreme angles or poses</li>
+                                                <li>Remove sunglasses or face coverings</li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -63,51 +93,122 @@
     </div>
 </section>
 
-<section class="bg-light-subtle py-5">
+<!-- Process Visualization -->
+<section class="py-5">
     <div class="container">
-        <h3 class="text-center mb-4">Enrollment Process</h3>
+        <h2 class="text-center mb-5 animate-on-scroll">Enrollment Process</h2>
+        
         <div class="row g-4">
             <div class="col-lg-3 col-md-6">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-image text-primary fs-4"></i>
+                <div class="futuristic-card h-100 animate-on-scroll">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-image"></i>
                         </div>
-                        <h5>Image Upload</h5>
-                        <p class="text-muted small">Upload a high-quality face image</p>
+                        <h3>Image Upload</h3>
+                        <p class="text-light opacity-75">Upload a high-quality face image to begin the enrollment process.</p>
                     </div>
                 </div>
             </div>
+            
             <div class="col-lg-3 col-md-6">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-crop text-primary fs-4"></i>
+                <div class="futuristic-card h-100 animate-on-scroll fade-in-1">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-crop"></i>
                         </div>
-                        <h5>Face Detection</h5>
-                        <p class="text-muted small">System locates and aligns the face</p>
+                        <h3>Face Detection</h3>
+                        <p class="text-light opacity-75">Advanced AI locates and aligns the face for optimal recognition.</p>
                     </div>
                 </div>
             </div>
+            
             <div class="col-lg-3 col-md-6">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-fingerprint text-primary fs-4"></i>
+                <div class="futuristic-card h-100 animate-on-scroll fade-in-2">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-fingerprint"></i>
                         </div>
-                        <h5>Template Creation</h5>
-                        <p class="text-muted small">Extract unique facial features</p>
+                        <h3>Feature Extraction</h3>
+                        <p class="text-light opacity-75">Neural network extracts unique facial features into a biometric template.</p>
                     </div>
                 </div>
             </div>
+            
             <div class="col-lg-3 col-md-6">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
-                            <i class="bi bi-database-add text-primary fs-4"></i>
+                <div class="futuristic-card h-100 animate-on-scroll fade-in-3">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-database-add"></i>
                         </div>
-                        <h5>Storage</h5>
-                        <p class="text-muted small">Save template in the database</p>
+                        <h3>Secure Storage</h3>
+                        <p class="text-light opacity-75">Template is securely stored in the database for future identification.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Advanced Features -->
+<section class="py-5">
+    <div class="container">
+        <div class="futuristic-card border-glow animate-on-scroll">
+            <div class="card-body p-4 p-md-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 text-center mb-4 mb-lg-0">
+                        <i class="bi bi-shield-lock display-1 text-accent"></i>
+                    </div>
+                    <div class="col-lg-9">
+                        <h3>Enhanced Security & Accuracy</h3>
+                        <p class="text-light opacity-90 mb-4">Our facial recognition system uses proprietary neural network architecture to ensure:</p>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex">
+                                    <div class="me-3 text-primary">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h5>Liveness Detection</h5>
+                                        <p class="text-light opacity-75 mb-0 small">Prevents spoofing attacks using photos or masks</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex">
+                                    <div class="me-3 text-primary">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h5>Multi-Angle Support</h5>
+                                        <p class="text-light opacity-75 mb-0 small">Recognizes faces from various angles and conditions</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex">
+                                    <div class="me-3 text-primary">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h5>Template Encryption</h5>
+                                        <p class="text-light opacity-75 mb-0 small">All biometric data is encrypted for maximum security</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex">
+                                    <div class="me-3 text-primary">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+                                    <div>
+                                        <h5>99.8% Accuracy</h5>
+                                        <p class="text-light opacity-75 mb-0 small">Industry-leading recognition accuracy rate</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -118,23 +219,83 @@
 
 {% block extra_js %}
 <script>
-    function previewImage(input) {
-        var preview = document.getElementById('imagePreview');
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
+document.addEventListener('DOMContentLoaded', function() {
+    // Image preview handling
+    const fileInput = document.getElementById('file');
+    const preview = document.getElementById('imagePreview');
+    const dropZone = document.getElementById('dropZone');
+    const fileName = document.querySelector('.file-name');
+    
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
             reader.onload = function(e) {
                 preview.src = e.target.result;
                 preview.style.display = 'block';
-            }
-            reader.readAsDataURL(input.files[0]);
+                
+                if (fileName) {
+                    fileName.textContent = fileInput.files[0].name;
+                }
+                
+                dropZone.classList.add('has-file');
+                
+                // Animate the preview appearance
+                preview.style.opacity = 0;
+                setTimeout(() => {
+                    preview.style.transition = 'opacity 0.5s ease';
+                    preview.style.opacity = 1;
+                }, 50);
+            };
+            reader.readAsDataURL(this.files[0]);
         } else {
             preview.style.display = 'none';
         }
-    }
-
-    // Hide preview initially
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('imagePreview').style.display = 'none';
     });
+    
+    // Drag and drop functionality
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, function(e) {
+            e.preventDefault();
+            this.classList.add('active');
+        });
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, function(e) {
+            e.preventDefault();
+            this.classList.remove('active');
+            
+            if (eventName === 'drop') {
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    fileInput.files = e.dataTransfer.files;
+                    
+                    // Trigger change event
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }
+            }
+        });
+    });
+    
+    // Hide preview initially
+    preview.style.display = 'none';
+    
+    // Animation for scroll elements
+    const animateOnScroll = function() {
+        const elements = document.querySelectorAll('.animate-on-scroll');
+        
+        elements.forEach(element => {
+            const elementPosition = element.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight * 0.85;
+            
+            if (elementPosition < screenPosition) {
+                element.classList.add('fade-in');
+            }
+        });
+    };
+    
+    window.addEventListener('scroll', animateOnScroll);
+    animateOnScroll(); // Run once on load
+});
 </script>
 {% endblock %}

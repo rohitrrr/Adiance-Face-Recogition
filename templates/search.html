@@ -23,7 +23,7 @@
         <div class="row">
             <!-- Search Form -->
             <div class="col-lg-5 mb-4 mb-lg-0">
-                <div class="futuristic-card border-glow h-100">
+                <div class="futuristic-card border-glow h-100 animate-on-scroll">
                     <div class="card-body p-4 p-md-5">
                         <h2 class="section-title">Upload Probe Image</h2>
                         <form method="POST" enctype="multipart/form-data" class="mt-4">
@@ -31,7 +31,8 @@
                                 <label class="form-label">Face Image <span class="text-danger">*</span></label>
                                 <input type="file" class="form-control d-none" id="file" name="file" accept=".jpg,.jpeg,.png,.bmp" required>
                                 <div class="drop-zone" id="dropZone">
-                                    <i class="bi bi-upload icon"></i>
+                                    <div class="scanning-effect"></div>
+                                    <i class="bi bi-camera icon"></i>
                                     <h5>Drop Image Here</h5>
                                     <p class="text-light opacity-50 small mb-3">or</p>
                                     <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('file').click()">
@@ -54,13 +55,14 @@
                             </div>
                             
                             <div class="preview-container mt-4 mb-4">
+                                <div class="scan-line"></div>
                                 <img id="imagePreview" src="#" alt="Preview">
                                 <div class="preview-overlay">
                                     <i class="bi bi-search fs-1 text-light"></i>
                                 </div>
                             </div>
                             
-                            <button type="submit" class="btn btn-primary w-100">
+                            <button type="submit" class="btn btn-primary w-100 pulse">
                                 <i class="bi bi-search me-2"></i> Search Face
                             </button>
                         </form>
@@ -70,7 +72,7 @@
             
             <!-- Results -->
             <div class="col-lg-7">
-                <div class="futuristic-card border-glow h-100">
+                <div class="futuristic-card border-glow h-100 animate-on-scroll fade-in-1">
                     <div class="card-body p-4 p-md-5">
                         <h2 class="section-title">Search Results</h2>
                         
@@ -84,8 +86,8 @@
                             
                             <ul class="result-list">
                                 {% for match in matches %}
-                                    <li class="result-item {% if loop.index == 1 %}match{% endif %}">
-                                        <div class="result-rank">{{ loop.index }}</div>
+                                    <li class="result-item {% if loop.index == 1 %}match{% endif %}" style="animation-delay: {{ loop.index * 100 }}ms;">
+                                        <div class="result-rank glow-on-hover">{{ loop.index }}</div>
                                         <div class="result-details">
                                             <div class="result-name">{{ match.template_id }}</div>
                                             <div class="result-score">
@@ -111,8 +113,11 @@
                                         <i class="bi bi-person-plus me-2"></i> Enroll New Face
                                     </a>
                                 {% else %}
-                                    <div class="empty-icon mb-4">
-                                        <i class="bi bi-search display-1 text-light opacity-50"></i>
+                                    <div class="empty-icon mb-4 pulse">
+                                        <div class="radar-animation">
+                                            <div class="radar-circle"></div>
+                                            <div class="radar-sweep"></div>
+                                        </div>
                                     </div>
                                     <h3>Upload a Probe Image</h3>
                                     <p class="text-light opacity-75">Select or drop an image to begin face identification.</p>
@@ -129,11 +134,11 @@
 <!-- Advanced Features -->
 <section class="py-5">
     <div class="container">
-        <h2 class="text-center mb-5">Advanced Matching Technology</h2>
+        <h2 class="text-center mb-5 animate-on-scroll">Advanced Matching Technology</h2>
         
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="futuristic-card h-100 animate-on-scroll">
+                <div class="futuristic-card h-100 animate-on-scroll glow-on-hover">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mx-auto">
                             <i class="bi bi-fingerprint"></i>
@@ -145,7 +150,7 @@
             </div>
             
             <div class="col-md-4">
-                <div class="futuristic-card h-100 animate-on-scroll fade-in-1">
+                <div class="futuristic-card h-100 animate-on-scroll fade-in-1 glow-on-hover">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mx-auto">
                             <i class="bi bi-graph-up"></i>
@@ -157,7 +162,7 @@
             </div>
             
             <div class="col-md-4">
-                <div class="futuristic-card h-100 animate-on-scroll fade-in-2">
+                <div class="futuristic-card h-100 animate-on-scroll fade-in-2 glow-on-hover">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon mx-auto">
                             <i class="bi bi-shield-check"></i>
@@ -186,12 +191,13 @@
                         
                         <div class="confidence-scale mt-4">
                             <div class="d-flex justify-content-between mb-2">
-                                <span>0%</                                <span>25%</span>
+                                <span>0%</span>
+                                <span>25%</span>
                                 <span>50%</span>
                                 <span>75%</span>
                                 <span>100%</span>
                             </div>
-                            <div class="confidence-bar" style="height: 8px; background: linear-gradient(to right, #ef476f, #ffd166, #06d6a0, #118ab2, #073b4c); border-radius: 4px;"></div>
+                            <div class="confidence-bar" style="height: 8px; background: linear-gradient(to right, rgba(var(--danger), 1), rgba(var(--warning), 1), rgba(var(--info), 1), rgba(var(--success), 1)); border-radius: 4px;"></div>
                             <div class="d-flex justify-content-between mt-2">
                                 <span class="small text-light opacity-75">No Match</span>
                                 <span class="small text-light opacity-75">Low</span>
@@ -202,11 +208,32 @@
                         </div>
                         
                         <div class="mt-4">
-                            <ul class="mb-0 ps-0" style="list-style: none;">
-                                <li class="mb-2"><span class="badge bg-danger me-2">Below 60%</span> Unlikely match</li>
-                                <li class="mb-2"><span class="badge bg-warning text-dark me-2">60-80%</span> Possible match, requires verification</li>
-                                <li><span class="badge bg-success me-2">Above 80%</span> Strong confidence in match</li>
-                            </ul>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="futuristic-card bg-transparent">
+                                        <div class="card-body text-center p-3" style="background: rgba(var(--danger), 0.1); border-left: 3px solid rgba(var(--danger), 0.8);">
+                                            <h5 class="mb-1"><span class="badge" style="background: rgba(var(--danger), 0.8);">Below 60%</span></h5>
+                                            <p class="small mb-0 text-light opacity-90">Unlikely match</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="futuristic-card bg-transparent">
+                                        <div class="card-body text-center p-3" style="background: rgba(var(--warning), 0.1); border-left: 3px solid rgba(var(--warning), 0.8);">
+                                            <h5 class="mb-1"><span class="badge" style="background: rgba(var(--warning), 0.8);">60-80%</span></h5>
+                                            <p class="small mb-0 text-light opacity-90">Possible match</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="futuristic-card bg-transparent">
+                                        <div class="card-body text-center p-3" style="background: rgba(var(--success), 0.1); border-left: 3px solid rgba(var(--success), 0.8);">
+                                            <h5 class="mb-1"><span class="badge" style="background: rgba(var(--success), 0.8);">Above 80%</span></h5>
+                                            <p class="small mb-0 text-light opacity-90">Strong match</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -214,6 +241,121 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Scanning animation */
+.scanning-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, 
+        transparent, 
+        rgba(var(--primary), 0.1),
+        rgba(var(--primary), 0.2),
+        rgba(var(--primary), 0.1),
+        transparent);
+    background-size: 100% 200%;
+    animation: scan 2s linear infinite;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.drop-zone:hover .scanning-effect {
+    opacity: 1;
+}
+
+@keyframes scan {
+    0% { background-position: 0 -100%; }
+    100% { background-position: 0 100%; }
+}
+
+/* Scan line for image preview */
+.preview-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(var(--primary), 0.8), transparent);
+    z-index: 2;
+    opacity: 0;
+    animation: scanLine 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes scanLine {
+    0% { top: 0; opacity: 0.8; }
+    50% { opacity: 0.6; }
+    100% { top: 100%; opacity: 0.8; }
+}
+
+.preview-container:hover .scan-line {
+    opacity: 1;
+}
+
+/* Radar animation for empty state */
+.radar-animation {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+}
+
+.radar-circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(var(--primary), 0.5);
+    border-radius: 50%;
+}
+
+.radar-sweep {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 50% 0%);
+    background: conic-gradient(
+        rgba(var(--primary), 0.3),
+        rgba(var(--primary), 0.2),
+        rgba(var(--primary), 0.1),
+        transparent 40%
+    );
+    animation: sweep 3s linear infinite;
+    transform-origin: center;
+}
+
+@keyframes sweep {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Enhanced result item animation */
+.result-item {
+    transform: translateX(-10px);
+    opacity: 0;
+    animation: slideIn 0.5s forwards;
+}
+
+@keyframes slideIn {
+    to { transform: translateX(0); opacity: 1; }
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -237,8 +379,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 dropZone.classList.add('has-file');
+                dropZone.style.display = 'none';
+                
+                // Add scanning animation when preview is shown
+                const scanLine = document.querySelector('.scan-line');
+                scanLine.style.opacity = '1';
+                
+                // Animate the preview appearance
+                preview.style.opacity = 0;
+                setTimeout(() => {
+                    preview.style.transition = 'opacity 0.5s ease';
+                    preview.style.opacity = 1;
+                }, 50);
             };
             reader.readAsDataURL(this.files[0]);
+        } else {
+            preview.style.display = 'none';
+            dropZone.style.display = 'flex';
         }
     });
     
@@ -270,12 +427,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hide preview initially
     preview.style.display = 'none';
     
-    // Animate result items sequentially
-    const resultItems = document.querySelectorAll('.result-item');
-    resultItems.forEach((item, index) => {
-        setTimeout(() => {
-            item.classList.add('fade-in');
-        }, 100 * index);
+    // Animation for scroll elements
+    const animateOnScroll = function() {
+        const elements = document.querySelectorAll('.animate-on-scroll');
+        
+        elements.forEach(element => {
+            const elementPosition = element.getBoundingClientRect().top;
+            const screenPosition = window.innerHeight * 0.85;
+            
+            if (elementPosition < screenPosition) {
+                element.classList.add('fade-in');
+            }
+        });
+    };
+    
+    window.addEventListener('scroll', animateOnScroll);
+    animateOnScroll(); // Run once on load
+    
+    // Glow effect on result ranks
+    const glowElements = document.querySelectorAll('.glow-on-hover');
+    glowElements.forEach(element => {
+        element.addEventListener('mousemove', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left; 
+            const y = e.clientY - rect.top;
+            
+            this.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(var(--primary), 0.8), rgba(var(--primary), 0.5) 40%, rgba(var(--primary), 0.2) 60%)`;
+        });
+        
+        element.addEventListener('mouseleave', function() {
+            this.style.background = '';
+        });
     });
 });
 </script>
