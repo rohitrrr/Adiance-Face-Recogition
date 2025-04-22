@@ -12,20 +12,18 @@ from adiance_wrapper import AdianceWrapper
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
-# Initialize Flask app with a factory function for better testability and organization
+
 def create_app(test_config=None):
     app = Flask(__name__)
     
-    # Configure app
+    
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY', os.urandom(24)),
-        MAX_CONTENT_LENGTH=16 * 1024 * 1024,  # Limit upload size to 16MB
+        MAX_CONTENT_LENGTH=16 * 1024 * 1024,  
         UPLOAD_FOLDER=os.path.join(app.static_folder, 'uploads'),
-        ALLOWED_EXTENSIONS={'jpg', 'jpeg', 'png', 'bmp', 'ppm'},  # Added PPM support
-        ADIANCE_CONFIG_DIR=os.environ.get('ADIANCE_CONFIG_DIR', 
-                           r'D:\Vmukti\APP\libfrvt_1N_Adiance_001.face.v3.0\config'),
-        ADIANCE_LIB_DIR=os.environ.get('ADIANCE_LIB_DIR', 
-                         r'D:\Vmukti\APP\libfrvt_1N_Adiance_001.face.v3.0\lib')
+        ALLOWED_EXTENSIONS={'jpg', 'jpeg', 'png', 'bmp', 'ppm'},
+        HF_MODEL_REPO=os.environ.get('HF_MODEL_REPO', 'Rohitrrr/adiance-face-models'),
+        ENROLLMENT_DIR=os.environ.get('ENROLLMENT_DIR', os.path.join(os.path.dirname(os.path.abspath(__file__)), "enrollment_db"))
     )
     
     if test_config:

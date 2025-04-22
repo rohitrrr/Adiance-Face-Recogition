@@ -9,6 +9,7 @@ import uuid
 import logging
 import time
 import onnxruntime as ort
+from huggingface_hub import hf_hub_download
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, 
@@ -58,7 +59,9 @@ class AdianceWrapper:
         # Path to library and config files
         app_root = os.path.dirname(os.path.abspath(__file__))
         self.config_dir = os.path.join(app_root, "config")
-        self.enrollment_dir = os.path.join(app_root, "enrollment_db")
+        
+        # Use environment variable for enrollment directory if provided
+        self.enrollment_dir = os.environ.get("ENROLLMENT_DIR", os.path.join(app_root, "enrollment_db"))
         
         # Ensure directories exist
         os.makedirs(self.enrollment_dir, exist_ok=True)
@@ -98,22 +101,58 @@ class AdianceWrapper:
         return config
     
     def _initialize_models(self):
-        """Initialize RetinaFace and AdaFace models"""
+        """Initialize RetinaFace and AdaFace models with HuggingFace support"""
         try:
+            # Get HuggingFace repo info from environment variables
+            hf_repo_id = os.environ.get("HF_MODEL_REPO", "Rohitrrr/adiance-face-models")
+            hf_token = os.environ.get("HUGGING_FACE_HUB_TOKEN", None)
+            force_hf_download = os.environ.get("FORCE_HF_DOWNLOAD", "false").lower() == "true"
+            
+            logger.info(f"Using model repository: {hf_repo_id}")
+            
             # Initialize RetinaFace
             retinaface_path = self.config.get('MTCNN_MODEL_PATH')
-            if not retinaface_path or not os.path.isfile(retinaface_path):
-                retinaface_path = os.path.join(self.config_dir, "Facedetect.onnx")
-                
+            local_path = os.path.join(self.config_dir, "Facedetect.onnx")
+            
+            # Force download or use local if exists and not forcing
+            if force_hf_download or not os.path.exists(local_path):
+                # Download from HuggingFace
+                logger.info(f"Downloading RetinaFace model from HuggingFace")
+                retinaface_path = hf_hub_download(
+                    repo_id=hf_repo_id,
+                    filename="Facedetect.onnx",
+                    token=hf_token,
+                    cache_dir=self.config_dir,
+                    force_download=force_hf_download
+                )
+                logger.info(f"Downloaded RetinaFace model to: {retinaface_path}")
+            else:
+                retinaface_path = local_path
+                logger.info(f"Using local RetinaFace model: {retinaface_path}")
+            
             logger.info(f"Loading RetinaFace model from: {retinaface_path}")
             self.retinaface_session = ort.InferenceSession(retinaface_path)
             logger.info(f"RetinaFace model input type: {self.retinaface_session.get_inputs()[0].type}")
             
-            # Initialize AdaFace
+            # Initialize AdaFace - similar pattern
             adaface_path = self.config.get('ADIANCE_MODEL_PATH')
-            if not adaface_path or not os.path.isfile(adaface_path):
-                adaface_path = os.path.join(self.config_dir, "Embedding.onnx")
-                
+            local_path = os.path.join(self.config_dir, "Embedding.onnx")
+            
+            # Force download or use local if exists and not forcing
+            if force_hf_download or not os.path.exists(local_path):
+                logger.info(f"Downloading AdaFace model from HuggingFace")
+                adaface_path = hf_hub_download(
+                    repo_id=hf_repo_id,
+                    filename="Embedding.onnx",
+                    token=hf_token,
+                    cache_dir=self.config_dir,
+                    force_download=force_hf_download
+                )
+                logger.info(f"Downloaded AdaFace model to: {adaface_path}")
+            else:
+                adaface_path = local_path
+                logger.info(f"Using local AdaFace model: {adaface_path}")
+            
             logger.info(f"Loading AdaFace model from: {adaface_path}")
             self.adaface_session = ort.InferenceSession(adaface_path)
             logger.info(f"AdaFace model input type: {self.adaface_session.get_inputs()[0].type}")
@@ -186,109 +225,124 @@ class AdianceWrapper:
             raise
     
     def detect_faces(self, image):
-        """Detect faces using RetinaFace with improved logic matching the C++ implementation"""
+        """Detect faces using RetinaFace with improved preprocessing"""
         try:
             # Check if image is valid
             if image is None or image.size == 0:
                 logger.error("Empty image provided to face detector")
                 return []
 
-            # Preprocess image with aspect ratio preservation (like C++ implementation)
+            # 1. Improved preprocessing for RetinaFace
             orig_h, orig_w = image.shape[:2]
             target_size = 640
             
-            # Preserve aspect ratio during resize (match C++ resizeImage logic)
-            if orig_h > orig_w:
-                new_h = target_size
-                new_w = int(orig_w * (target_size / orig_h))
-            else:
-                new_w = target_size
-                new_h = int(orig_h * (target_size / orig_w))
-                
-            # Resize and pad
+            # Make sure image is RGB (not grayscale)
+            if len(image.shape) == 2:
+                image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+            
+            # Simplify preprocessing - use direct resize with constant aspect ratio
+            max_size = max(orig_h, orig_w)
+            scale = target_size / max_size
+            new_h, new_w = int(orig_h * scale), int(orig_w * scale)
+            
+            # Resize image
             resized = cv2.resize(image, (new_w, new_h))
+            
+            # Create padded square image
             canvas = np.zeros((target_size, target_size, 3), dtype=np.uint8)
             canvas[:new_h, :new_w] = resized
             
-            # Calculate resize factor for later bbox scaling
-            resize_factor = new_h / orig_h
+            # Debug info
+            logger.debug(f"Original image: {orig_h}x{orig_w}, resized: {new_h}x{new_w}, scale: {scale}")
             
-            # Convert to RGB and normalize as float32
-            img = cv2.cvtColor(canvas, cv2.COLOR_BGR2RGB)
-            img = img.astype(np.float32)
-            img = ((img - np.array([104, 117, 123], dtype=np.float32))
-                   / np.float32(255.0)).astype(np.float32)
-            img = np.transpose(img, (2, 0, 1))
-            img = np.expand_dims(img, 0)
+            # 2. Preprocess exactly as RetinaFace expects
+            # Convert to float and normalize (subtract mean, don't divide by 255 for RetinaFace)
+            img_float = canvas.astype(np.float32)
+            img_float -= np.array([104.0, 117.0, 123.0])  # BGR mean values
             
-            # Run inference
+            # Convert to NCHW format (batch, channels, height, width)
+            img_nchw = np.transpose(img_float, (2, 0, 1))  # HWC to CHW
+            img_nchw = np.expand_dims(img_nchw, 0)  # Add batch dimension
+            
+            # 3. Run model with correct input format
             input_name = self.retinaface_session.get_inputs()[0].name
-            outputs = self.retinaface_session.run(None, {input_name: img})
+            outputs = self.retinaface_session.run(None, {input_name: img_nchw})
             
-            # Process outputs
+            # 4. Process outputs with lower confidence threshold
+            # RetinaFace outputs: [loc, conf, landmarks]
             loc, conf, landmarks = outputs
             
-            # Use a lower confidence threshold for better recall
-            conf_thresh = float(self.config.get('RETINAFACE_CONF_THRESH', 0.3))
-            logger.debug(f"Face detection using confidence threshold: {conf_thresh}")
+            # Use a very low confidence threshold to ensure we detect faces
+            conf_thresh = 0.2  # Lower threshold to catch more faces
             
-            # Decode detections with debug info
+            # Process detections
             faces = []
+            
+            # Debug the shape of outputs
+            logger.debug(f"Detection output shapes: loc: {loc.shape}, conf: {conf.shape}, landmarks: {landmarks.shape}")
+            
+            # Process each detection
             for i in range(loc.shape[1]):
-                confidence = conf[0, i, 1]
+                confidence = conf[0, i, 1]  # Face class confidence
                 
                 if confidence > conf_thresh:
-                    # Get and scale bounding box to original image dimensions
-                    bbox = loc[0, i].copy()
+                    # Get bounding box
+                    box = loc[0, i, :4]  # xmin, ymin, xmax, ymax
                     
-                    # Scale coordinates back to original image dimensions
-                    bbox[0] = max(0, int(bbox[0] * target_size / resize_factor))  # x1
-                    bbox[1] = max(0, int(bbox[1] * target_size / resize_factor))  # y1
-                    bbox[2] = min(orig_w, int(bbox[2] * target_size / resize_factor))  # x2
-                    bbox[3] = min(orig_h, int(bbox[3] * target_size / resize_factor))  # y2
+                    # Scale back to original image dimensions
+                    x1 = max(0, int(box[0] * target_size / scale))
+                    y1 = max(0, int(box[1] * target_size / scale))
+                    x2 = min(orig_w, int(box[2] * target_size / scale))
+                    y2 = min(orig_h, int(box[3] * target_size / scale))
                     
-                    # Get and scale landmarks
-                    lm = landmarks[0, i].reshape(-1, 2).copy()
-                    for j in range(lm.shape[0]):
-                        lm[j, 0] = lm[j, 0] * target_size / resize_factor  # x
-                        lm[j, 1] = lm[j, 1] * target_size / resize_factor  # y
+                    # Safety check on box dimensions
+                    if x2 <= x1 or y2 <= y1:
+                        continue
                     
-                    face = {
-                        'bbox': bbox,
-                        'confidence': confidence,
-                        'landmarks': lm
-                    }
-                    faces.append(face)
+                    # Get landmarks (5 points)
+                    lm = landmarks[0, i, :].reshape(5, 2)
+                    scaled_landmarks = []
+                    
+                    for j in range(5):
+                        lm_x = int(lm[j, 0] * target_size / scale)
+                        lm_y = int(lm[j, 1] * target_size / scale)
+                        scaled_landmarks.append((lm_x, lm_y))
+                    
+                    # Create face info
+                    faces.append({
+                        'bbox': np.array([x1, y1, x2, y2]),
+                        'confidence': float(confidence),
+                        'landmarks': np.array(scaled_landmarks)
+                    })
+                    
+                    # Debug info about detection
+                    logger.debug(f"Detected face: conf={confidence:.3f}, bbox={[x1, y1, x2, y2]}")
             
-            # Try with lower threshold as fallback if no faces found
-            if not faces and conf_thresh > 0.2:
-                logger.debug("No faces found, retrying with lower threshold")
-                backup_thresh = 0.2
-                for i in range(loc.shape[1]):
-                    confidence = conf[0, i, 1]
-                    if confidence > backup_thresh:
-                        # Add face with same logic as above
-                        bbox = loc[0, i].copy()
-                        bbox[0] = max(0, int(bbox[0] * target_size / resize_factor))
-                        bbox[1] = max(0, int(bbox[1] * target_size / resize_factor))
-                        bbox[2] = min(orig_w, int(bbox[2] * target_size / resize_factor))
-                        bbox[3] = min(orig_h, int(bbox[3] * target_size / resize_factor))
+            # If no faces found, try with preprocessing variation
+            if not faces:
+                # Try flipping the image (some models work better with different orientations)
+                flipped = cv2.flip(image, 1)  # horizontal flip
+                flipped_faces = self.detect_faces(flipped)
+                
+                if flipped_faces:
+                    logger.info("Detected face in flipped image")
+                    # Adjust coordinates for the original image
+                    for face in flipped_faces:
+                        bbox = face['bbox']
+                        # Adjust x-coordinates: newX = imageWidth - oldX
+                        bbox[0] = orig_w - bbox[2]  # x1 = width - x2
+                        bbox[2] = orig_w - face['bbox'][0]  # x2 = width - x1
                         
-                        lm = landmarks[0, i].reshape(-1, 2).copy()
-                        for j in range(lm.shape[0]):
-                            lm[j, 0] = lm[j, 0] * target_size / resize_factor
-                            lm[j, 1] = lm[j, 1] * target_size / resize_factor
-                        
-                        face = {
-                            'bbox': bbox,
-                            'confidence': confidence,
-                            'landmarks': lm
-                        }
-                        faces.append(face)
+                        # Also adjust landmark coordinates
+                        for i, (x, y) in enumerate(face['landmarks']):
+                            face['landmarks'][i] = (orig_w - x, y)
+                    
+                    return flipped_faces
             
             return faces
+            
         except Exception as e:
-            logger.error(f"Error in face detection: {e}")
+            logger.error(f"Error in face detection: {e}", exc_info=True)
             return []
     
     def extract_features(self, face_img):
@@ -521,3 +575,36 @@ class AdianceWrapper:
             error_msg = str(e)
             logger.error(f"Error searching person: {error_msg}")
             return False, f"Error during search: {error_msg}"
+
+    def align_face(self, image, landmarks):
+        """Align face using detected landmarks"""
+        try:
+            # Reference points for alignment (eyes, nose, mouth corners)
+            # These are the standard landmarks for 112x112 AdaFace model
+            ref_landmarks = np.array([
+                [38.2946, 51.6963],  # Left eye
+                [73.5318, 51.5014],  # Right eye
+                [56.0252, 71.7366],  # Nose
+                [41.5493, 92.3655],  # Left mouth corner
+                [70.7299, 92.2041]   # Right mouth corner
+            ], dtype=np.float32)
+            
+            # If landmarks are a list of tuples, convert to numpy array
+            if isinstance(landmarks[0], tuple):
+                landmarks = np.array(landmarks, dtype=np.float32)
+                
+            # Convert to float32 if needed
+            landmarks = landmarks.astype(np.float32)
+            
+            # Get transformation matrix
+            transform = cv2.estimateAffinePartial2D(landmarks, ref_landmarks)[0]
+            
+            # Apply transformation - warp to 112x112 size
+            aligned_face = cv2.warpAffine(image, transform, (112, 112))
+            
+            return aligned_face
+            
+        except Exception as e:
+            logger.error(f"Error aligning face: {e}")
+            # If alignment fails, just resize
+            return cv2.resize(image, (112, 112))
