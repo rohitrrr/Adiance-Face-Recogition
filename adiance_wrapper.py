@@ -106,56 +106,68 @@ class AdianceWrapper:
             # Get HuggingFace repo info from environment variables
             hf_repo_id = os.environ.get("HF_MODEL_REPO", "Rohitrrr/adiance-face-models")
             hf_token = os.environ.get("HUGGING_FACE_HUB_TOKEN", None)
-            force_hf_download = os.environ.get("FORCE_HF_DOWNLOAD", "false").lower() == "true"
             
             logger.info(f"Using model repository: {hf_repo_id}")
             
             # Initialize RetinaFace
-            retinaface_path = self.config.get('MTCNN_MODEL_PATH')
-            local_path = os.path.join(self.config_dir, "Facedetect.onnx")
-            
-            # Force download or use local if exists and not forcing
-            if force_hf_download or not os.path.exists(local_path):
-                # Download from HuggingFace
+            try:
                 logger.info(f"Downloading RetinaFace model from HuggingFace")
                 retinaface_path = hf_hub_download(
                     repo_id=hf_repo_id,
                     filename="Facedetect.onnx",
                     token=hf_token,
                     cache_dir=self.config_dir,
-                    force_download=force_hf_download
                 )
                 logger.info(f"Downloaded RetinaFace model to: {retinaface_path}")
-            else:
-                retinaface_path = local_path
-                logger.info(f"Using local RetinaFace model: {retinaface_path}")
+            except Exception as e:
+                logger.warning(f"Failed to download RetinaFace model: {e}")
+                # Handle local fallback if needed
+                local_path = os.path.join(self.config_dir, "Facedetect.onnx")
+                if os.path.exists(local_path):
+                    retinaface_path = local_path
+                    logger.info(f"Using local RetinaFace model: {retinaface_path}")
+                else:
+                    raise
             
             logger.info(f"Loading RetinaFace model from: {retinaface_path}")
             self.retinaface_session = ort.InferenceSession(retinaface_path)
-            logger.info(f"RetinaFace model input type: {self.retinaface_session.get_inputs()[0].type}")
             
-            # Initialize AdaFace - similar pattern
-            adaface_path = self.config.get('ADIANCE_MODEL_PATH')
-            local_path = os.path.join(self.config_dir, "Embedding.onnx")
-            
-            # Force download or use local if exists and not forcing
-            if force_hf_download or not os.path.exists(local_path):
-                logger.info(f"Downloading AdaFace model from HuggingFace")
+            # Initialize the smaller embedding model (w600k_mbf.onnx)
+            try:
+                logger.info(f"Downloading smaller embedding model from HuggingFace")
                 adaface_path = hf_hub_download(
                     repo_id=hf_repo_id,
-                    filename="Embedding.onnx",
+                    # Use the smaller model filename
+                    filename="w600k_mbf.onnx", 
                     token=hf_token,
                     cache_dir=self.config_dir,
-                    force_download=force_hf_download
                 )
-                logger.info(f"Downloaded AdaFace model to: {adaface_path}")
-            else:
-                adaface_path = local_path
-                logger.info(f"Using local AdaFace model: {adaface_path}")
+                logger.info(f"Downloaded embedding model to: {adaface_path}")
+            except Exception as e:
+                logger.warning(f"Failed to download embedding model: {e}")
+                # Handle local fallback if needed
+                local_path = os.path.join(self.config_dir, "w600k_mbf.onnx")
+                if os.path.exists(local_path):
+                    adaface_path = local_path
+                    logger.info(f"Using local embedding model: {adaface_path}")
+                else:
+                    raise
             
-            logger.info(f"Loading AdaFace model from: {adaface_path}")
-            self.adaface_session = ort.InferenceSession(adaface_path)
-            logger.info(f"AdaFace model input type: {self.adaface_session.get_inputs()[0].type}")
+            logger.info(f"Loading embedding model from: {adaface_path}")
+            
+            # Add memory optimizations for free tier
+            sess_options = ort.SessionOptions()
+            sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+            sess_options.intra_op_num_threads = 1
+            sess_options.inter_op_num_threads = 1
+            
+            self.adaface_session = ort.InferenceSession(
+                adaface_path,
+                sess_options=sess_options,
+                providers=['CPUExecutionProvider']
+            )
+            
+            logger.info("Models loaded successfully")
             
         except Exception as e:
             logger.error(f"Failed to initialize models: {e}")

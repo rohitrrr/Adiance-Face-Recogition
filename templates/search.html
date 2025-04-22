@@ -8,8 +8,8 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-8 mx-auto text-center">
-                <h1 class="animate-on-scroll">Face Search</h1>
-                <p class="lead text-light opacity-75 animate-on-scroll fade-in-1">
+                <h1 class="animate-on-scroll glitch-text hero-title" data-text="Face Search">Face Search</h1>
+                <p class="lead text-light opacity-90 animate-on-scroll fade-in-1">
                     Find matching faces in the database with high precision
                 </p>
             </div>
@@ -23,9 +23,10 @@
         <div class="row">
             <!-- Search Form -->
             <div class="col-lg-5 mb-4 mb-lg-0">
-                <div class="futuristic-card border-glow h-100 animate-on-scroll">
+                <div class="futuristic-card border-glow h-100 animate-on-scroll card-3d">
                     <div class="card-body p-4 p-md-5">
-                        <h2 class="section-title">Upload Probe Image</h2>
+                        <div class="card-shine"></div>
+                        <h2 class="section-title text-shadow-accent">Upload Probe Image</h2>
                         <form method="POST" enctype="multipart/form-data" class="mt-4">
                             <div class="mb-4 file-upload-container">
                                 <label class="form-label">Face Image <span class="text-danger">*</span></label>
@@ -34,13 +35,13 @@
                                     <div class="scanning-effect"></div>
                                     <i class="bi bi-camera icon"></i>
                                     <h5>Drop Image Here</h5>
-                                    <p class="text-light opacity-50 small mb-3">or</p>
+                                    <p class="text-light opacity-75 small mb-3">or</p>
                                     <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('file').click()">
                                         Select File
                                     </button>
-                                    <p class="text-light opacity-50 mt-3 small file-name"></p>
+                                    <p class="text-light opacity-75 mt-3 small file-name"></p>
                                 </div>
-                                <div class="form-text text-light opacity-50">Supported formats: JPG, JPEG, PNG, BMP</div>
+                                <div class="form-text text-light opacity-75">Supported formats: JPG, JPEG, PNG, BMP</div>
                             </div>
                             
                             <div class="mb-4">
@@ -51,18 +52,24 @@
                                     </span>
                                     <input type="number" class="form-control border-start-0" id="candidate_count" name="candidate_count" min="1" max="100" value="10">
                                 </div>
-                                <div class="form-text text-light opacity-50">Number of potential matches to return</div>
+                                <div class="form-text text-light opacity-75">Number of potential matches to return</div>
                             </div>
                             
                             <div class="preview-container mt-4 mb-4">
                                 <div class="scan-line"></div>
+                                <div class="data-grid" id="previewGrid"></div>
                                 <img id="imagePreview" src="#" alt="Preview">
                                 <div class="preview-overlay">
+                                    <div class="tech-circles">
+                                        <div class="tech-circle"></div>
+                                        <div class="tech-circle"></div>
+                                        <div class="tech-circle"></div>
+                                    </div>
                                     <i class="bi bi-search fs-1 text-light"></i>
                                 </div>
                             </div>
                             
-                            <button type="submit" class="btn btn-primary w-100 pulse">
+                            <button type="submit" class="btn btn-primary w-100 pulse-btn">
                                 <i class="bi bi-search me-2"></i> Search Face
                             </button>
                         </form>
@@ -74,19 +81,29 @@
             <div class="col-lg-7">
                 <div class="futuristic-card border-glow h-100 animate-on-scroll fade-in-1">
                     <div class="card-body p-4 p-md-5">
-                        <h2 class="section-title">Search Results</h2>
+                        <div class="card-shine"></div>
+                        <h2 class="section-title text-shadow-accent">Search Results</h2>
                         
                         {% if matches %}
                             <div class="result-metrics mb-4">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0">Found {{ matches|length }} potential matches</h5>
+                                    <h5 class="mb-0 text-light">Found {{ matches|length }} potential matches</h5>
                                     <span class="badge bg-primary px-3 py-2">Top Match: {{ "%.1f"|format(matches[0].score * 100) }}%</span>
+                                </div>
+                                
+                                <!-- Neural network visualization -->
+                                <div class="neural-viz mt-3">
+                                    <div class="neural-lines">
+                                        {% for i in range(5) %}
+                                        <div class="neural-line" style="animation-delay: {{ i * 0.2 }}s"></div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                             
-                            <ul class="result-list">
+                            <ul class="result-list stagger-children">
                                 {% for match in matches %}
-                                    <li class="result-item {% if loop.index == 1 %}match{% endif %}" style="animation-delay: {{ loop.index * 100 }}ms;">
+                                    <li class="result-item {% if loop.index == 1 %}match{% endif %}">
                                         <div class="result-rank glow-on-hover">{{ loop.index }}</div>
                                         <div class="result-details">
                                             <div class="result-name">{{ match.template_id }}</div>
@@ -97,6 +114,12 @@
                                                 <span class="score-value">{{ "%.1f"|format(match.score * 100) }}%</span>
                                             </div>
                                         </div>
+                                        <div class="holo-lines"></div>
+                                        <div class="data-points">
+                                            {% for i in range(3) %}
+                                            <div class="data-point" style="--delay: {{ i * 0.2 }}s"></div>
+                                            {% endfor %}
+                                        </div>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -105,11 +128,11 @@
                             <div class="empty-state text-center py-5">
                                 {% if request.method == 'POST' %}
                                     <div class="empty-icon mb-4">
-                                        <i class="bi bi-emoji-neutral display-1 text-light opacity-50"></i>
+                                        <i class="bi bi-emoji-neutral display-1 text-light opacity-75"></i>
                                     </div>
-                                    <h3>No Matches Found</h3>
-                                    <p class="text-light opacity-75 mb-4">The face doesn't match any enrolled subjects in the database.</p>
-                                    <a href="{{ url_for('enroll') }}" class="btn btn-outline">
+                                    <h3 class="glitch-text" data-text="No Matches Found">No Matches Found</h3>
+                                    <p class="text-light opacity-90 mb-4">The face doesn't match any enrolled subjects in the database.</p>
+                                    <a href="{{ url_for('enroll') }}" class="btn btn-outline"></a>
                                         <i class="bi bi-person-plus me-2"></i> Enroll New Face
                                     </a>
                                 {% else %}
@@ -119,8 +142,8 @@
                                             <div class="radar-sweep"></div>
                                         </div>
                                     </div>
-                                    <h3>Upload a Probe Image</h3>
-                                    <p class="text-light opacity-75">Select or drop an image to begin face identification.</p>
+                                    <h3 class="text-light">Upload a Probe Image</h3>
+                                    <p class="text-light opacity-90">Select or drop an image to begin face identification.</p>
                                 {% endif %}
                             </div>
                         {% endif %}
@@ -132,43 +155,45 @@
 </section>
 
 <!-- Advanced Features -->
-<section class="py-5">
+<section class="py-5 particle-bg">
+    <div class="blob blob-1" data-speed="0.03"></div>
+    <div class="blob blob-2" data-speed="0.05"></div>
     <div class="container">
-        <h2 class="text-center mb-5 animate-on-scroll">Advanced Matching Technology</h2>
+        <h2 class="text-center mb-5 animate-on-scroll text-shadow-light">Advanced Matching Technology</h2>
         
-        <div class="row g-4">
+        <div class="row g-4 feature-cards-row">
             <div class="col-md-4">
-                <div class="futuristic-card h-100 animate-on-scroll glow-on-hover">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon mx-auto">
+                <div class="futuristic-card feature-card h-100 animate-on-scroll glow-on-hover card-3d">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="feature-icon mx-auto mb-4">
                             <i class="bi bi-fingerprint"></i>
                         </div>
-                        <h3>Deep Face Embedding</h3>
-                        <p class="text-light opacity-75">Advanced neural network creates a unique 512-dimensional embedding for each face.</p>
+                        <h3 class="text-light card-title mb-3">Deep Face Embedding</h3>
+                        <p class="text-light opacity-90 flex-grow-1 mb-0">Advanced neural network creates a unique 512-dimensional embedding for each face.</p>
                     </div>
                 </div>
             </div>
             
             <div class="col-md-4">
-                <div class="futuristic-card h-100 animate-on-scroll fade-in-1 glow-on-hover">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon mx-auto">
+                <div class="futuristic-card feature-card h-100 animate-on-scroll fade-in-1 glow-on-hover card-3d">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="feature-icon mx-auto mb-4">
                             <i class="bi bi-graph-up"></i>
                         </div>
-                        <h3>Similarity Scoring</h3>
-                        <p class="text-light opacity-75">Cosine similarity algorithm provides accurate measures of identity matching.</p>
+                        <h3 class="text-light card-title mb-3">Similarity Scoring</h3>
+                        <p class="text-light opacity-90 flex-grow-1 mb-0">Cosine similarity algorithm provides accurate measures of identity matching.</p>
                     </div>
                 </div>
             </div>
             
             <div class="col-md-4">
-                <div class="futuristic-card h-100 animate-on-scroll fade-in-2 glow-on-hover">
-                    <div class="card-body text-center p-4">
-                        <div class="feature-icon mx-auto">
+                <div class="futuristic-card feature-card h-100 animate-on-scroll fade-in-2 glow-on-hover card-3d">
+                    <div class="card-body text-center p-4 d-flex flex-column">
+                        <div class="feature-icon mx-auto mb-4">
                             <i class="bi bi-shield-check"></i>
                         </div>
-                        <h3>Match Verification</h3>
-                        <p class="text-light opacity-75">Robust verification protocol ensures accurate face identification.</p>
+                        <h3 class="text-light card-title mb-3">Match Verification</h3>
+                        <p class="text-light opacity-90 flex-grow-1 mb-0">Robust verification protocol ensures accurate face identification.</p>
                     </div>
                 </div>
             </div>
@@ -186,24 +211,23 @@
                         <i class="bi bi-bar-chart-line display-1 text-gradient"></i>
                     </div>
                     <div class="col-lg-9">
-                        <h3>Understanding Match Confidence</h3>
+                        <h3 class="text-light text-shadow-light">Understanding Match Confidence</h3>
                         <p class="text-light opacity-90">Our facial recognition system generates similarity scores that indicate the likelihood of a match:</p>
                         
                         <div class="confidence-scale mt-4">
                             <div class="d-flex justify-content-between mb-2">
-                                <span>0%</span>
-                                <span>25%</span>
-                                <span>50%</span>
-                                <span>75%</span>
-                                <span>100%</span>
+                                <span class="text-light">0%</                                <span class="text-light">25%</span>
+                                <span class="text-light">50%</span>
+                                <span class="text-light">75%</span>
+                                <span class="text-light">100%</span>
                             </div>
                             <div class="confidence-bar" style="height: 8px; background: linear-gradient(to right, rgba(var(--danger), 1), rgba(var(--warning), 1), rgba(var(--info), 1), rgba(var(--success), 1)); border-radius: 4px;"></div>
                             <div class="d-flex justify-content-between mt-2">
-                                <span class="small text-light opacity-75">No Match</span>
-                                <span class="small text-light opacity-75">Low</span>
-                                <span class="small text-light opacity-75">Medium</span>
-                                <span class="small text-light opacity-75">High</span>
-                                <span class="small text-light opacity-75">Exact</span>
+                                <span class="small text-light opacity-90">No Match</span>
+                                <span class="small text-light opacity-90">Low</span>
+                                <span class="small text-light opacity-90">Medium</span>
+                                <span class="small text-light opacity-90">High</span>
+                                <span class="small text-light opacity-90">Exact</span>
                             </div>
                         </div>
                         
@@ -212,7 +236,7 @@
                                 <div class="col-md-4">
                                     <div class="futuristic-card bg-transparent">
                                         <div class="card-body text-center p-3" style="background: rgba(var(--danger), 0.1); border-left: 3px solid rgba(var(--danger), 0.8);">
-                                            <h5 class="mb-1"><span class="badge" style="background: rgba(var(--danger), 0.8);">Below 60%</span></h5>
+                                            <h5 class="mb-1 text-light"><span class="badge" style="background: rgba(var(--danger), 0.8);">Below 60%</span></h5>
                                             <p class="small mb-0 text-light opacity-90">Unlikely match</p>
                                         </div>
                                     </div>
@@ -220,7 +244,7 @@
                                 <div class="col-md-4">
                                     <div class="futuristic-card bg-transparent">
                                         <div class="card-body text-center p-3" style="background: rgba(var(--warning), 0.1); border-left: 3px solid rgba(var(--warning), 0.8);">
-                                            <h5 class="mb-1"><span class="badge" style="background: rgba(var(--warning), 0.8);">60-80%</span></h5>
+                                            <h5 class="mb-1 text-light"><span class="badge" style="background: rgba(var(--warning), 0.8);">60-80%</span></h5>
                                             <p class="small mb-0 text-light opacity-90">Possible match</p>
                                         </div>
                                     </div>
@@ -228,7 +252,7 @@
                                 <div class="col-md-4">
                                     <div class="futuristic-card bg-transparent">
                                         <div class="card-body text-center p-3" style="background: rgba(var(--success), 0.1); border-left: 3px solid rgba(var(--success), 0.8);">
-                                            <h5 class="mb-1"><span class="badge" style="background: rgba(var(--success), 0.8);">Above 80%</span></h5>
+                                            <h5 class="mb-1 text-light"><span class="badge" style="background: rgba(var(--success), 0.8);">Above 80%</span></h5>
                                             <p class="small mb-0 text-light opacity-90">Strong match</p>
                                         </div>
                                     </div>
@@ -245,7 +269,7 @@
 
 {% block extra_css %}
 <style>
-/* Scanning animation */
+/* Enhanced Scanning animation */
 .scanning-effect {
     position: absolute;
     top: 0;
@@ -275,10 +299,69 @@
     100% { background-position: 0 100%; }
 }
 
-/* Scan line for image preview */
+/* Advanced tech circles for overlay */
+.tech-circles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.tech-circle {
+    position: absolute;
+    border: 1px solid rgba(var(--accent), 0.5);
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.tech-circle:nth-child(1) {
+    width: 40px;
+    height: 40px;
+    animation: pulse-circle 2s infinite 0s;
+}
+
+.tech-circle:nth-child(2) {
+    width: 80px;
+    height: 80px;
+    animation: pulse-circle 2s infinite 0.3s;
+}
+
+.tech-circle:nth-child(3) {
+    width: 120px;
+    height: 120px;
+    animation: pulse-circle 2s infinite 0.6s;
+}
+
+@keyframes pulse-circle {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { opacity: 0.7; }
+    100% { transform: scale(1.2); opacity: 0; }
+}
+
+/* Enhanced scan line for image preview */
 .preview-container {
     position: relative;
     overflow: hidden;
+    border-radius: 12px;
+    background-color: rgba(var(--surface-darker), 0.7);
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.preview-container img {
+    max-width: 100%;
+    max-height: 250px;
+    border-radius: 6px;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease;
 }
 
 .scan-line {
@@ -287,11 +370,13 @@
     left: 0;
     width: 100%;
     height: 4px;
-    background: linear-gradient(90deg, transparent, rgba(var(--primary), 0.8), transparent);
+    background: linear-gradient(90deg, transparent, rgba(var(--accent), 1), transparent);
     z-index: 2;
     opacity: 0;
     animation: scanLine 2s ease-in-out infinite;
     pointer-events: none;
+    box-shadow: 0 0 20px rgba(var(--accent), 0.7);
+    filter: blur(1px);
 }
 
 @keyframes scanLine {
@@ -304,7 +389,7 @@
     opacity: 1;
 }
 
-/* Radar animation for empty state */
+/* Advanced Radar animation for empty state */
 .radar-animation {
     position: relative;
     width: 120px;
@@ -318,8 +403,10 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border: 2px solid rgba(var(--primary), 0.5);
+    border: 2px solid rgba(var(--accent), 0.6);
     border-radius: 50%;
+    box-shadow: 0 0 30px rgba(var(--accent), 0.4);
+    animation: pulseRadar 3s infinite;
 }
 
 .radar-sweep {
@@ -331,13 +418,21 @@
     border-radius: 50%;
     clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 50% 0%);
     background: conic-gradient(
-        rgba(var(--primary), 0.3),
-        rgba(var(--primary), 0.2),
-        rgba(var(--primary), 0.1),
+        rgba(var(--accent), 0.4),
+        rgba(var(--accent), 0.3),
+        rgba(var(--accent), 0.2),
+        rgba(var(--accent), 0.1),
         transparent 40%
     );
     animation: sweep 3s linear infinite;
     transform-origin: center;
+    filter: drop-shadow(0 0 15px rgba(var(--accent), 0.4));
+}
+
+@keyframes pulseRadar {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
 }
 
 @keyframes sweep {
@@ -345,15 +440,248 @@
     to { transform: rotate(360deg); }
 }
 
+/* Advanced Neural Network visualization for results */
+.neural-viz {
+    position: relative;
+    height: 3px;
+    background: rgba(var(--surface-darker), 0.6);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.neural-lines {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.neural-line {
+    position: absolute;
+    height: 100%;
+    width: 30%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(var(--primary), 0.8), 
+        rgba(var(--accent), 0.8), 
+        transparent);
+    filter: blur(1px);
+    animation: neural-pulse 3s ease-in-out infinite;
+}
+
+@keyframes neural-pulse {
+    0% { left: -30%; opacity: 0.7; }
+    100% { left: 100%; opacity: 0; }
+}
+
 /* Enhanced result item animation */
+.result-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
 .result-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    background: rgba(var(--surface-darker), 0.7);
+    border: 1px solid rgba(var(--text-primary), 0.08);
     transform: translateX(-10px);
     opacity: 0;
     animation: slideIn 0.5s forwards;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+
+.result-item:hover {
+    transform: translateY(-5px) scale(1.02);
+    background: rgba(var(--surface-darker), 0.9);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.result-item.match {
+    background: linear-gradient(to right, 
+        rgba(var(--success), 0.2),
+        rgba(var(--surface-darker), 0.7) 80%);
+    border-left: 3px solid rgba(var(--success), 0.6);
+}
+
+.stagger-children .result-item:nth-child(1) { animation-delay: 0.1s; }
+.stagger-children .result-item:nth-child(2) { animation-delay: 0.2s; }
+.stagger-children .result-item:nth-child(3) { animation-delay: 0.3s; }
+.stagger-children .result-item:nth-child(4) { animation-delay: 0.4s; }
+.stagger-children .result-item:nth-child(5) { animation-delay: 0.5s; }
+.stagger-children .result-item:nth-child(6) { animation-delay: 0.6s; }
+.stagger-children .result-item:nth-child(7) { animation-delay: 0.7s; }
+.stagger-children .result-item:nth-child(8) { animation-delay: 0.8s; }
+.stagger-children .result-item:nth-child(9) { animation-delay: 0.9s; }
+.stagger-children .result-item:nth-child(10) { animation-delay: 1s; }
 
 @keyframes slideIn {
     to { transform: translateX(0); opacity: 1; }
+}
+
+/* Data points animation */
+.data-points {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 5px;
+}
+
+.data-point {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: rgba(var(--accent), 0.8);
+    animation: data-point-pulse 2s infinite;
+    animation-delay: var(--delay);
+    box-shadow: 0 0 5px rgba(var(--accent), 0.5);
+}
+
+@keyframes data-point-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.5); opacity: 1; }
+}
+
+.result-rank {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(var(--primary), 0.3);
+    font-weight: bold;
+    margin-right: 15px;
+    position: relative;
+    font-family: 'Orbitron', sans-serif;
+    color: rgba(var(--text-primary), 0.95);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.result-rank::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, rgba(var(--primary), 0.7), rgba(var(--accent), 0.7));
+    z-index: -1;
+    filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.result-item:hover .result-rank {
+    transform: scale(1.1);
+    background: rgba(var(--primary), 0.4);
+}
+
+.result-item:hover .result-rank::after {
+    opacity: 1;
+}
+
+.result-details {
+    flex: 1;
+}
+
+.result-name {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.5px;
+    color: rgba(var(--text-primary), 0.95);
+}
+
+.result-score {
+    display: flex;
+    align-items: center;
+}
+
+.score-bar {
+    flex: 1;
+    height: 6px;
+    background-color: rgba(var(--text-primary), 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-right: 10px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.score-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(var(--primary), 0.8), rgba(var(--accent), 0.8));
+    border-radius: 3px;
+    position: relative;
+    box-shadow: 0 0 8px rgba(var(--accent), 0.3);
+}
+
+.score-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(var(--text-primary), 0.4),
+        transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.score-value {
+    font-weight: 600;
+    color: rgba(var(--text-primary), 0.95);
+    min-width: 50px;
+    text-align: right;
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Pulsing button effect */
+.pulse-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.pulse-btn::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.pulse-btn:hover::after {
+    opacity: 1;
+    animation: btn-pulse 1s infinite;
+}
+
+@keyframes btn-pulse {
+    0% { transform: scale(0.9); opacity: 0.5; }
+    50% { transform: scale(1.5); opacity: 0; }
+    100% { transform: scale(0.9); opacity: 0; }
 }
 </style>
 {% endblock %}
@@ -361,11 +689,12 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Image preview handling
+    // Image preview handling with advanced effects
     const fileInput = document.getElementById('file');
     const preview = document.getElementById('imagePreview');
     const dropZone = document.getElementById('dropZone');
     const fileName = document.querySelector('.file-name');
+    const previewContainer = document.querySelector('.preview-container');
     
     fileInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
@@ -381,29 +710,108 @@ document.addEventListener('DOMContentLoaded', function() {
                 dropZone.classList.add('has-file');
                 dropZone.style.display = 'none';
                 
-                // Add scanning animation when preview is shown
+                // Add advanced scanning animations
                 const scanLine = document.querySelector('.scan-line');
                 scanLine.style.opacity = '1';
                 
-                // Animate the preview appearance
+                // Create data grid for futuristic effect
+                const previewGrid = document.getElementById('previewGrid');
+                if (previewGrid) {
+                    previewGrid.innerHTML = ''; // Clear existing grid
+                    
+                    // Create grid pattern
+                    for (let i = 0; i < 10; i++) {
+                        const horizontalLine = document.createElement('div');
+                        horizontalLine.className = 'grid-line horizontal';
+                        horizontalLine.style.top = `${i * 10}%`;
+                        horizontalLine.style.animationDelay = `${i * 0.1}s`;
+                        previewGrid.appendChild(horizontalLine);
+                        
+                        const verticalLine = document.createElement('div');
+                        verticalLine.className = 'grid-line vertical';
+                        verticalLine.style.left = `${i * 10}%`;
+                        verticalLine.style.animationDelay = `${i * 0.1}s`;
+                        previewGrid.appendChild(verticalLine);
+                    }
+                    
+                    // Activate grid
+                    previewGrid.classList.add('active');
+                }
+                
+                // Add data points surrounding the image
+                const dataPointsCount = 10;
+                for (let i = 0; i < dataPointsCount; i++) {
+                    const dataPoint = document.createElement('div');
+                    dataPoint.className = 'data-point';
+                    dataPoint.style.position = 'absolute';
+                    
+                    // Position randomly around the image
+                    const angle = (i / dataPointsCount) * 2 * Math.PI;
+                    const radius = Math.min(previewContainer.offsetWidth, previewContainer.offsetHeight) * 0.4;
+                    const x = 50 + Math.cos(angle) * 40; // percentage
+                    const y = 50 + Math.sin(angle) * 40; // percentage
+                    
+                    dataPoint.style.left = `${x}%`;
+                    dataPoint.style.top = `${y}%`;
+                    dataPoint.style.animationDelay = `${i * 0.2}s`;
+                    
+                    previewContainer.appendChild(dataPoint);
+                }
+                
+                // Advanced fade in animation
                 preview.style.opacity = 0;
+                preview.style.transform = 'scale(0.95)';
+                
                 setTimeout(() => {
-                    preview.style.transition = 'opacity 0.5s ease';
+                    preview.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                     preview.style.opacity = 1;
+                    preview.style.transform = 'scale(1)';
+                    
+                    // Add glitch effect momentarily
+                    preview.style.animation = 'glitchEffect 0.3s forwards';
+                    setTimeout(() => {
+                        preview.style.animation = '';
+                    }, 300);
                 }, 50);
             };
             reader.readAsDataURL(this.files[0]);
         } else {
-            preview.style.display = 'none';
-            dropZone.style.display = 'flex';
+            cleanupPreview();
         }
     });
     
-    // Drag and drop functionality
+    function cleanupPreview() {
+        preview.style.display = 'none';
+        dropZone.style.display = 'flex';
+        dropZone.classList.remove('has-file');
+        
+        if (fileName) {
+            fileName.textContent = '';
+        }
+        
+        // Remove data points
+        const dataPoints = previewContainer.querySelectorAll('.data-point');
+        dataPoints.forEach(point => point.remove());
+        
+        // Deactivate grid
+        const previewGrid = document.getElementById('previewGrid');
+        if (previewGrid) {
+            previewGrid.classList.remove('active');
+        }
+    }
+    
+    // Enhanced drag and drop functionality with effects
     ['dragenter', 'dragover'].forEach(eventName => {
         dropZone.addEventListener(eventName, function(e) {
             e.preventDefault();
             this.classList.add('active');
+            
+            // Enhance scanning effect
+            const scanningEffect = this.querySelector('.scanning-effect');
+            if (scanningEffect) {
+                scanningEffect.style.opacity = '1';
+                scanningEffect.style.animation = 'scan 1.5s linear infinite';
+            }
         });
     });
     
@@ -411,6 +819,13 @@ document.addEventListener('DOMContentLoaded', function() {
         dropZone.addEventListener(eventName, function(e) {
             e.preventDefault();
             this.classList.remove('active');
+            
+            // Reset scanning effect
+            const scanningEffect = this.querySelector('.scanning-effect');
+            if (scanningEffect) {
+                scanningEffect.style.opacity = '';
+                scanningEffect.style.animation = '';
+            }
             
             if (eventName === 'drop') {
                 if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -427,36 +842,56 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hide preview initially
     preview.style.display = 'none';
     
-    // Animation for scroll elements
-    const animateOnScroll = function() {
-        const elements = document.querySelectorAll('.animate-on-scroll');
-        
-        elements.forEach(element => {
-            const elementPosition = element.getBoundingClientRect().top;
-            const screenPosition = window.innerHeight * 0.85;
-            
-            if (elementPosition < screenPosition) {
-                element.classList.add('fade-in');
-            }
-        });
-    };
+    // 3D card effect
+    const cards = document.querySelectorAll('.card-3d');
     
-    window.addEventListener('scroll', animateOnScroll);
-    animateOnScroll(); // Run once on load
-    
-    // Glow effect on result ranks
-    const glowElements = document.querySelectorAll('.glow-on-hover');
-    glowElements.forEach(element => {
-        element.addEventListener('mousemove', function(e) {
+    cards.forEach(card => {
+        card.addEventListener('mousemove', function(e) {
             const rect = this.getBoundingClientRect();
-            const x = e.clientX - rect.left; 
+            const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             
-            this.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(var(--primary), 0.8), rgba(var(--primary), 0.5) 40%, rgba(var(--primary), 0.2) 60%)`;
+            // Calculate position percentage
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const percentX = (x - centerX) / centerX;
+            const percentY = (y - centerY) / centerY;
+            
+            // Apply 3D rotation (subtle)
+            this.style.transform = `perspective(1000px) rotateY(${percentX * 5}deg) rotateX(${-percentY * 5}deg)`;
         });
         
-        element.addEventListener('mouseleave', function() {
-            this.style.background = '';
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
+        });
+    });
+
+    // Add holographic effect to result items
+    const resultItems = document.querySelectorAll('.result-item');
+    resultItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            const holoLines = this.querySelector('.holo-lines');
+            if (holoLines) {
+                holoLines.style.opacity = '1';
+                
+                // Create holo lines dynamically
+                if (holoLines.children.length === 0) {
+                    for (let i = 0; i < 5; i++) {
+                        const line = document.createElement('div');
+                        line.className = 'holo-line';
+                        line.style.top = `${20 * i}%`;
+                        holoLines.appendChild(line);
+                    }
+                }
+            }
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            const holoLines = this.querySelector('.holo-lines');
+            if (holoLines) {
+                holoLines.style.opacity = '0';
+            }
         });
     });
 });

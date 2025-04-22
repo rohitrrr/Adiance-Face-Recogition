@@ -10,22 +10,60 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/futuristic.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-theme.css') }}">
     {% block extra_css %}{% endblock %}
+
+    <!-- Critical page loader script - Ensures loading screen doesn't get stuck -->
+    <script>
+        // Failsafe to ensure the page always loads even if other scripts fail
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const pageLoader = document.getElementById('page-loader');
+                if (pageLoader) {
+                    pageLoader.classList.add('loaded');
+                    setTimeout(function() {
+                        pageLoader.style.display = 'none';
+                    }, 600);
+                }
+            }, 1500);
+        });
+    </script>
 </head>
 <body>
+    <!-- Page Loader -->
+    <div id="page-loader">
+        <div class="loader-content">
+            <div class="brand-icon-large loading-logo">
+                <div class="hexagon">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <div class="logo-glow"></div>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <div class="brand-icon">
-                    <i class="bi bi-person-badge"></i>
+                <div class="brand-logo-container">
+                    <div class="brand-icon">
+                        <div class="hexagon">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div class="logo-glow"></div>
+                    </div>
+                    <span class="logo-text">Adiance<span class="text-gradient">FaceAI</span></span>
                 </div>
-                Adiance FaceAI
             </a>
             
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -101,10 +139,15 @@
             <div class="row">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
                     <a class="navbar-brand" href="{{ url_for('index') }}">
-                        <div class="brand-icon">
-                            <i class="bi bi-person-badge"></i>
+                        <div class="brand-logo-container">
+                            <div class="brand-icon">
+                                <div class="hexagon">
+                                    <i class="bi bi-person-badge"></i>
+                                </div>
+                                <div class="logo-glow"></div>
+                            </div>
+                            <span class="logo-text">Adiance<span class="text-gradient">FaceAI</span></span>
                         </div>
-                        Adiance FaceAI
                     </a>
                     <p class="mt-2 text-light opacity-75 small">High-performance facial recognition system</p>
                 </div>
@@ -119,8 +162,11 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/futuristic.js') }}"></script>
     {% block extra_js %}{% endblock %}
 </body>

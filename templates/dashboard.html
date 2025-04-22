@@ -3,135 +3,260 @@
 {% block title %}Dashboard - Adiance Face Recognition{% endblock %}
 
 {% block content %}
-<section class="hero-section">
+<!-- Hero Section -->
+<section class="hero-section particle-bg" id="dashboard-particles">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
     <div class="container">
         <div class="row hero-content">
             <div class="col-12 text-center">
-                <h1 class="display-4 fw-bold">System Dashboard</h1>
-                <p class="lead">Monitor performance and usage statistics</p>
+                <h1 class="hero-title animate-on-scroll glitch-text" data-text="System Dashboard">System Dashboard</h1>
+                <p class="lead text-light opacity-90 animate-on-scroll fade-in-1">
+                    Real-time monitoring and analytics for face recognition performance
+                </p>
             </div>
         </div>
     </div>
 </section>
 
-<section class="container py-5">
-    <div class="row mb-5">
-        <div class="col-md-3">
-            <div class="card bg-primary bg-gradient text-white">
-                <div class="card-body text-center">
-                    <h3 class="display-4 fw-bold">{{ stats['enrollments'] }}</h3>
-                    <p class="mb-0">Total Enrollments</p>
+<!-- Main Statistics Section -->
+<section class="py-5">
+    <div class="container">
+        <!-- Key Metrics Row -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3 col-sm-6">
+                <div class="futuristic-card stat-card animate-on-scroll glow-on-hover h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="card-shine"></div>
+                        <div class="circular-progress">
+                            <svg width="120" height="120" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(var(--primary), 0.1)" stroke-width="12"/>
+                                <circle class="progress-circle" cx="60" cy="60" r="54" fill="none" stroke="url(#gradient1)" stroke-width="12" stroke-dasharray="339.3" stroke-dashoffset="0" transform="rotate(-90, 60, 60)"/>
+                                <defs>
+                                    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%">
+                                        <stop offset="0%" stop-color="rgba(var(--primary), 1)" />
+                                        <stop offset="100%" stop-color="rgba(var(--accent), 1)" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="circular-progress-value">{{ stats['enrollments'] }}</div>
+                        </div>
+                        <h3 class="mt-4 text-light">Enrollments</h3>
+                        <div class="holo-lines"></div>
+                        <div class="data-points">
+                            {% for i in range(3) %}
+                                <div class="data-point" style="--delay: {{ i * 0.2 }}s"></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <div class="futuristic-card stat-card animate-on-scroll fade-in-1 glow-on-hover h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="card-shine"></div>
+                        <div class="circular-progress">
+                            <svg width="120" height="120" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(var(--success), 0.1)" stroke-width="12"/>
+                                <circle class="progress-circle" cx="60" cy="60" r="54" fill="none" stroke="url(#gradient2)" stroke-width="12" stroke-dasharray="339.3" stroke-dashoffset="0" transform="rotate(-90, 60, 60)"/>
+                                <defs>
+                                    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%">
+                                        <stop offset="0%" stop-color="rgba(var(--success), 1)" />
+                                        <stop offset="100%" stop-color="rgba(var(--accent), 1)" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="circular-progress-value">{{ stats['searches'] }}</div>
+                        </div>
+                        <h3 class="mt-4 text-light">Searches</h3>
+                        <div class="holo-lines"></div>
+                        <div class="data-points">
+                            {% for i in range(3) %}
+                                <div class="data-point" style="--delay: {{ i * 0.2 }}s"></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <div class="futuristic-card stat-card animate-on-scroll fade-in-2 glow-on-hover h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="card-shine"></div>
+                        <div class="circular-progress">
+                            <svg width="120" height="120" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(var(--info), 0.1)" stroke-width="12"/>
+                                <circle class="progress-circle" cx="60" cy="60" r="54" fill="none" stroke="url(#gradient3)" stroke-width="12" stroke-dasharray="339.3" stroke-dashoffset="0" transform="rotate(-90, 60, 60)"/>
+                                <defs>
+                                    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%">
+                                        <stop offset="0%" stop-color="rgba(var(--info), 1)" />
+                                        <stop offset="100%" stop-color="rgba(var(--accent), 1)" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="circular-progress-value">{{ enrollment_count }}</div>
+                        </div>
+                        <h3 class="mt-4 text-light">Subjects</h3>
+                        <div class="holo-lines"></div>
+                        <div class="data-points">
+                            {% for i in range(3) %}
+                                <div class="data-point" style="--delay: {{ i * 0.2 }}s"></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 col-sm-6">
+                <div class="futuristic-card stat-card animate-on-scroll fade-in-3 glow-on-hover h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="card-shine"></div>
+                        <div class="circular-progress">
+                            <svg width="120" height="120" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(var(--warning), 0.1)" stroke-width="12"/>
+                                <circle class="progress-circle search-rate-circle" cx="60" cy="60" r="54" fill="none" stroke="url(#gradient4)" stroke-width="12" stroke-dasharray="339.3" stroke-dashoffset="0" transform="rotate(-90, 60, 60)"/>
+                                <defs>
+                                    <linearGradient id="gradient4" x1="0%" y1="0%" x2="100%">
+                                        <stop offset="0%" stop-color="rgba(var(--warning), 1)" />
+                                        <stop offset="100%" stop-color="rgba(var(--primary), 1)" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="circular-progress-value">{{ (stats['searches'] / stats['enrollments'] * 100)|round(1) if stats['enrollments'] > 0 else 0 }}%</div>
+                        </div>
+                        <h3 class="mt-4 text-light">Search Rate</h3>
+                        <div class="holo-lines"></div>
+                        <div class="data-points">
+                            {% for i in range(3) %}
+                                <div class="data-point" style="--delay: {{ i * 0.2 }}s"></div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-success bg-gradient text-white">
-                <div class="card-body text-center">
-                    <h3 class="display-4 fw-bold">{{ stats['searches'] }}</h3>
-                    <p class="mb-0">Total Searches</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-info bg-gradient text-white">
-                <div class="card-body text-center">
-                    <h3 class="display-4 fw-bold">{{ enrollment_count }}</h3>
-                    <p class="mb-0">Enrolled Subjects</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-warning bg-gradient text-white">
-                <div class="card-body text-center">
-                    <h3 class="display-4 fw-bold">{{ (stats['searches'] / stats['enrollments'] * 100)|round(1) if stats['enrollments'] > 0 else 0 }}%</h3>
-                    <p class="mb-0">Search Rate</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="card-title mb-0">System Information</h5>
+        <!-- System Info and Charts -->
+        <div class="row g-4">
+            <!-- System Information -->
+            <div class="col-lg-4">
+                <div class="futuristic-card border-glow h-100 animate-on-scroll">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-container me-3">
+                                <i class="bi bi-cpu text-gradient"></i>
+                            </div>
+                            <h3 class="text-light mb-0">System Information</h3>
+                        </div>
+                        
+                        <div class="system-info-list">
+                            <div class="info-item">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-light">System Uptime</span>
+                                    <span class="badge bg-primary px-3 py-2">{{ (stats['startup_time']|format_date) }}</span>
+                                </div>
+                                <div class="progress glow-bar" style="height: 6px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item mt-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-light">Last Enrollment</span>
+                                    <span class="badge bg-success px-3 py-2">{{ (stats['last_enrollment']|format_date) }}</span>
+                                </div>
+                                <div class="progress glow-bar" style="height: 6px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item mt-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-light">Last Search</span>
+                                    <span class="badge bg-info px-3 py-2">{{ (stats['last_search']|format_date) }}</span>
+                                </div>
+                                <div class="progress glow-bar" style="height: 6px;">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            System Uptime
-                            <span class="badge bg-primary rounded-pill">{{ (stats['startup_time']|format_date) }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Last Enrollment
-                            <span class="badge bg-success rounded-pill">{{ (stats['last_enrollment']|format_date) }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Last Search
-                            <span class="badge bg-info rounded-pill">{{ (stats['last_search']|format_date) }}</span>
-                        </li>
-                    </ul>
+            </div>
+            
+            <!-- Activity Chart -->
+            <div class="col-lg-8">
+                <div class="futuristic-card border-glow h-100 animate-on-scroll fade-in-1">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-container me-3">
+                                    <i class="bi bi-graph-up-arrow text-gradient"></i>
+                                </div>
+                                <h3 class="text-light mb-0">Activity Overview</h3>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline btn-sm active">Week</button>
+                                <button type="button" class="btn btn-outline btn-sm">Month</button>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container" style="height: 300px;">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-white">
-                    <h5 class="card-title mb-0">Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-3">
-                        <a href="{{ url_for('enroll') }}" class="btn btn-primary">
-                            <i class="bi bi-person-plus me-2"></i> Enroll New Face
-                        </a>
-                        <a href="{{ url_for('search') }}" class="btn btn-success">
-                            <i class="bi bi-search me-2"></i> Search Face
-                        </a>
-                        <a href="{{ url_for('batch_enroll') }}" class="btn btn-info text-white">
-                            <i class="bi bi-people me-2"></i> Batch Enrollment
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="bg-light-subtle py-5">
-    <div class="container">
-        <h2 class="mb-4">System Health</h2>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0">Face Recognition System</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Face Detection Model</span>
-                                <span class="badge bg-success">Operational</span>
+        <!-- System Health Section -->
+        <div class="row g-4 mt-4">
+            <div class="col-lg-6">
+                <div class="futuristic-card border-glow h-100 animate-on-scroll">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-container me-3">
+                                <i class="bi bi-shield-check text-gradient"></i>
                             </div>
-                            <div class="progress" style="height: 8px">
+                            <h3 class="text-light mb-0">System Health</h3>
+                        </div>
+                        
+                        <div class="mb-4 health-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-light">Face Detection Model</span>
+                                <div class="health-status">
+                                    <span class="status-dot status-active"></span>
+                                    <span class="badge bg-success px-3 py-2">Operational</span>
+                                </div>
+                            </div>
+                            <div class="progress glow-bar" style="height: 6px;">
                                 <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Face Embedding Model</span>
-                                <span class="badge bg-success">Operational</span>
+                        
+                        <div class="mb-4 health-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-light">Face Embedding Model</span>
+                                <div class="health-status">
+                                    <span class="status-dot status-active"></span>
+                                    <span class="badge bg-success px-3 py-2">Operational</span>
+                                </div>
                             </div>
-                            <div class="progress" style="height: 8px">
+                            <div class="progress glow-bar" style="height: 6px;">
                                 <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
                             </div>
                         </div>
-                        <div class="mb-0">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Enrollment Database</span>
-                                <span class="badge bg-success">Connected</span>
+                        
+                        <div class="health-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-light">Enrollment Database</span>
+                                <div class="health-status">
+                                    <span class="status-dot status-active"></span>
+                                    <span class="badge bg-success px-3 py-2">Connected</span>
+                                </div>
                             </div>
-                            <div class="progress" style="height: 8px">
+                            <div class="progress glow-bar" style="height: 6px;">
                                 <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
                             </div>
                         </div>
@@ -139,37 +264,112 @@
                 </div>
             </div>
             
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0">Server Resources</h5>
+            <div class="col-lg-6">
+                <div class="futuristic-card border-glow h-100 animate-on-scroll fade-in-1">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-container me-3">
+                                <i class="bi bi-server text-gradient"></i>
+                            </div>
+                            <h3 class="text-light mb-0">Server Resources</h3>
+                        </div>
+                        
+                        <div class="resource-gauge mb-4">
+                            <div class="d-flex justify-content-between align-items-end mb-2">
+                                <span class="text-light">CPU Usage</span>
+                                <span class="value-label">28<span class="unit">%</span></span>
+                            </div>
+                            <div class="gauge">
+                                <div class="gauge-inner">
+                                    <div class="gauge-value" style="transform: rotate(28deg);"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="resource-gauge mb-4">
+                            <div class="d-flex justify-content-between align-items-end mb-2">
+                                <span class="text-light">Memory Usage</span>
+                                <span class="value-label">42<span class="unit">%</span></span>
+                            </div>
+                            <div class="gauge">
+                                <div class="gauge-inner">
+                                    <div class="gauge-value" style="transform: rotate(42deg);"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="resource-gauge">
+                            <div class="d-flex justify-content-between align-items-end mb-2">
+                                <span class="text-light">Disk Space</span>
+                                <span class="value-label">67<span class="unit">%</span></span>
+                            </div>
+                            <div class="gauge">
+                                <div class="gauge-inner">
+                                    <div class="gauge-value" style="transform: rotate(67deg);"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Memory Usage</span>
-                                <span>42%</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="row g-4 mt-4">
+            <div class="col-12">
+                <div class="futuristic-card border-glow animate-on-scroll fade-in-2">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="icon-container me-3">
+                                <i class="bi bi-lightning-charge text-gradient"></i>
                             </div>
-                            <div class="progress" style="height: 8px">
-                                <div class="progress-bar" role="progressbar" style="width: 42%"></div>
-                            </div>
+                            <h3 class="text-light mb-0">Quick Actions</h3>
                         </div>
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>CPU Usage</span>
-                                <span>28%</span>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <a href="{{ url_for('enroll') }}" class="action-card">
+                                    <div class="action-card-inner">
+                                        <div class="icon">
+                                            <i class="bi bi-person-plus"></i>
+                                        </div>
+                                        <h4>Enroll Face</h4>
+                                        <p>Register a new face in the system</p>
+                                        <div class="action-arrow">
+                                            <i class="bi bi-arrow-right"></i>
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
-                            <div class="progress" style="height: 8px">
-                                <div class="progress-bar" role="progressbar" style="width: 28%"></div>
+                            
+                            <div class="col-md-4">
+                                <a href="{{ url_for('search') }}" class="action-card">
+                                    <div class="action-card-inner">
+                                        <div class="icon">
+                                            <i class="bi bi-search"></i>
+                                        </div>
+                                        <h4>Search Face</h4>
+                                        <p>Find matches in the database</p>
+                                        <div class="action-arrow">
+                                            <i class="bi bi-arrow-right"></i>
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
-                        </div>
-                        <div class="mb-0">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span>Disk Space</span>
-                                <span>67%</span>
-                            </div>
-                            <div class="progress" style="height: 8px">
-                                <div class="progress-bar" role="progressbar" style="width: 67%"></div>
+                            
+                            <div class="col-md-4">
+                                <a href="{{ url_for('batch_enroll') }}" class="action-card">
+                                    <div class="action-card-inner">
+                                        <div class="icon">
+                                            <i class="bi bi-people"></i>
+                                        </div>
+                                        <h4>Batch Enrollment</h4>
+                                        <p>Process multiple faces at once</p>
+                                        <div class="action-arrow">
+                                            <i class="bi bi-arrow-right"></i>
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -178,4 +378,365 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Dashboard Specific Styles */
+.icon-container {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(var(--primary), 0.2);
+    font-size: 1.2rem;
+}
+
+.text-gradient {
+    background: linear-gradient(90deg, rgba(var(--primary), 1), rgba(var(--accent), 1));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Circular Progress */
+.circular-progress {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+}
+
+.progress-circle {
+    stroke-dashoffset: 339.3; /* Initial value (full circle) */
+    animation: progress-anim 1.5s ease-out forwards;
+}
+
+.search-rate-circle {
+    animation: search-rate-anim 1.5s ease-out forwards;
+}
+
+@keyframes progress-anim {
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes search-rate-anim {
+    to { stroke-dashoffset: calc(339.3 * (1 - {{ (stats['searches'] / stats['enrollments'] if stats['enrollments'] > 0 else 0)|default(0) }})); }
+}
+
+.circular-progress-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+    font-weight: 700;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(45deg, rgba(var(--primary), 1), rgba(var(--accent), 1));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Progress Bars */
+.info-item, .health-item {
+    padding: 12px;
+    border-radius: 12px; 
+    background: rgba(var(--surface-darker), 0.5);
+    transition: all 0.3s ease;
+}
+
+.info-item:hover, .health-item:hover {
+    background: rgba(var(--surface-darker), 0.7);
+    transform: translateY(-2px);
+}
+
+.glow-bar {
+    position: relative;
+    background: rgba(var(--surface-darker), 0.5);
+    overflow: hidden;
+}
+
+.glow-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(var(--light), 0.2), transparent);
+    animation: bar-shine 3s infinite;
+}
+
+@keyframes bar-shine {
+    to { left: 100%; }
+}
+
+/* Health Status Indicators */
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status-active {
+    background: rgba(var(--success), 1);
+    box-shadow: 0 0 10px rgba(var(--success), 0.7);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Resource Gauges */
+.resource-gauge {
+    position: relative;
+}
+
+.value-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: rgba(var(--light), 0.95);
+}
+
+.unit {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-left: 2px;
+}
+
+.gauge {
+    position: relative;
+    height: 10px;
+    background: rgba(var(--surface-darker), 0.5);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.gauge-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.gauge-value {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(90deg, rgba(var(--primary), 0.8), rgba(var(--accent), 0.8));
+    transform-origin: left center;
+    transform: rotate(0deg);
+    clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+    transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 10px rgba(var(--accent), 0.5);
+}
+
+/* Quick Action Cards */
+.action-card {
+    display: block;
+    height: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    color: rgba(var(--light), 0.9);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: rgba(var(--surface-darker), 0.5);
+}
+
+.action-card-inner {
+    position: relative;
+    height: 100%;
+    padding: 20px;
+    border: 1px solid rgba(var(--light), 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover {
+    color: rgba(var(--light), 1);
+    transform: translateY(-5px);
+}
+
+.action-card:hover .action-card-inner {
+    border-color: rgba(var(--primary), 0.5);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.action-card .icon {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: rgba(var(--primary), 0.9);
+}
+
+.action-card h4 {
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.action-card p {
+    color: rgba(var(--light), 0.7);
+    font-size: 0.9rem;
+}
+
+.action-arrow {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.action-card:hover .action-arrow {
+    opacity: 1;
+    transform: translateX(5px);
+}
+
+/* Activity Chart */
+.chart-container {
+    position: relative;
+}
+
+.chart-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(var(--surface-darker), 1), transparent 30%);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up Activity Chart
+    const ctxActivity = document.getElementById('activityChart').getContext('2d');
+    
+    // Generate some example data
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const enrollmentsData = Array.from({length: 7}, () => Math.floor(Math.random() * 50) + 10);
+    const searchesData = Array.from({length: 7}, () => Math.floor(Math.random() * 70) + 20);
+    
+    const activityChart = new Chart(ctxActivity, {
+        type: 'line',
+        data: {
+            labels: days,
+            datasets: [
+                {
+                    label: 'Enrollments',
+                    data: enrollmentsData,
+                    borderColor: 'rgba(var(--primary), 0.8)',
+                    backgroundColor: 'rgba(var(--primary), 0.2)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: 'rgba(var(--primary), 1)',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Searches',
+                    data: searchesData,
+                    borderColor: 'rgba(var(--accent), 0.8)',
+                    backgroundColor: 'rgba(var(--accent), 0.2)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: 'rgba(var(--accent), 1)',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: 'rgba(var(--text-primary), 0.9)',
+                        font: {
+                            family: "'Manrope', sans-serif"
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: 'rgba(var(--text-primary), 0.1)'
+                    },
+                    ticks: {
+                        color: 'rgba(var(--text-primary), 0.7)'
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(var(--text-primary), 0.1)'
+                    },
+                    ticks: {
+                        color: 'rgba(var(--text-primary), 0.7)'
+                    }
+                }
+            },
+            animation: {
+                duration: 2000,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+    
+    // Animate resource gauges
+    document.querySelectorAll('.gauge-value').forEach(gauge => {
+        const angle = parseFloat(gauge.style.transform.replace('rotate(', '').replace('deg)', ''));
+        gauge.style.transform = 'rotate(0deg)';
+        
+        setTimeout(() => {
+            gauge.style.transform = `rotate(${angle}deg)`;
+        }, 500);
+    });
+    
+    // Calculate search rate for animation
+    const searchRateCircle = document.querySelector('.search-rate-circle');
+    if (searchRateCircle) {
+        {% if stats['enrollments'] > 0 %}
+        const searchRate = {{ stats['searches'] / stats['enrollments'] }};
+        {% else %}
+        const searchRate = 0;
+        {% endif %}
+        
+        // Set the correct circle animation
+        searchRateCircle.style.animation = `search-rate-anim 1.5s ease-out forwards`;
+        document.styleSheets[0].insertRule(
+            `@keyframes search-rate-anim {
+                to { stroke-dashoffset: calc(339.3 * (1 - ${searchRate})); }
+            }`,
+            document.styleSheets[0].cssRules.length
+        );
+    }
+    
+    // Add holographic effect to cards
+    if (typeof addHolographicEffects === 'function') {
+        addHolographicEffects();
+    }
+    
+    // Setup particle background
+    if (typeof initParticleBackgrounds === 'function') {
+        initParticleBackgrounds();
+    }
+});
+</script>
 {% endblock %}
