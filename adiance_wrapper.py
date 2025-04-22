@@ -132,29 +132,42 @@ class AdianceWrapper:
             logger.info(f"Loading RetinaFace model from: {retinaface_path}")
             self.retinaface_session = ort.InferenceSession(retinaface_path)
             
-            # Initialize AdaFace - CORRECTED FILENAME to lowercase
+            # Initialize the smaller embedding model (w600k_mbf.onnx)
             try:
-                logger.info(f"Downloading AdaFace model from HuggingFace")
+                logger.info(f"Downloading smaller embedding model from HuggingFace")
                 adaface_path = hf_hub_download(
                     repo_id=hf_repo_id,
-                    # Use lowercase filename to match what's in the repository
-                    filename="embedding.onnx", 
+                    # Use the smaller model filename
+                    filename="w600k_mbf.onnx", 
                     token=hf_token,
                     cache_dir=self.config_dir,
                 )
-                logger.info(f"Downloaded AdaFace model to: {adaface_path}")
+                logger.info(f"Downloaded embedding model to: {adaface_path}")
             except Exception as e:
-                logger.warning(f"Failed to download AdaFace model: {e}")
+                logger.warning(f"Failed to download embedding model: {e}")
                 # Handle local fallback if needed
-                local_path = os.path.join(self.config_dir, "embedding.onnx")
+                local_path = os.path.join(self.config_dir, "w600k_mbf.onnx")
                 if os.path.exists(local_path):
                     adaface_path = local_path
-                    logger.info(f"Using local AdaFace model: {adaface_path}")
+                    logger.info(f"Using local embedding model: {adaface_path}")
                 else:
                     raise
             
-            logger.info(f"Loading AdaFace model from: {adaface_path}")
-            self.adaface_session = ort.InferenceSession(adaface_path)
+            logger.info(f"Loading embedding model from: {adaface_path}")
+            
+            # Add memory optimizations for free tier
+            sess_options = ort.SessionOptions()
+            sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+            sess_options.intra_op_num_threads = 1
+            sess_options.inter_op_num_threads = 1
+            
+            self.adaface_session = ort.InferenceSession(
+                adaface_path,
+                sess_options=sess_options,
+                providers=['CPUExecutionProvider']
+            )
+            
+            logger.info("Models loaded successfully")
             
         except Exception as e:
             logger.error(f"Failed to initialize models: {e}")
